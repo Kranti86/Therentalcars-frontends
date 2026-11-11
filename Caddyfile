@@ -1,0 +1,52 @@
+# Railway (Railpack) static hosting for the Therentalcars online app.
+# Based on Railpack's default static-site Caddyfile, plus what vercel.json did:
+#   "/"      -> serves online.html (the booking app)
+#   "/about" -> serves about.html  (clean URLs; *.html still works too)
+{
+	admin off
+	persist_config off
+	auto_https off
+
+	log {
+		format json
+	}
+
+	servers {
+		trusted_proxies static private_ranges
+	}
+}
+
+:{$PORT:80} {
+	log {
+		format json
+	}
+
+	respond /health 200
+
+	header {
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		# Allows the backend API, PayPal card fields, Google tags and Clarity (all https).
+		Content-Security-Policy "default-src 'self'; img-src 'self' data: https: *; style-src 'self' 'unsafe-inline' https: *; script-src 'self' 'unsafe-inline' https: *; font-src 'self' data: https: *; connect-src 'self' https: *; media-src 'self' https: *; object-src 'none'; frame-src 'self' https: *;"
+		-Server
+	}
+
+	root * .
+
+	# Home page = the booking app (same as the vercel.json rewrite)
+	rewrite / /online.html
+
+	# Clean URLs: /about -> about.html, /online -> online.html
+	try_files {path} {path}.html {path}/index.html
+
+	encode gzip zstd
+
+	file_server {
+		# never serve config/docs files
+		hide .git .env* Caddyfile Staticfile vercel.json *.md
+	}
+
+	handle_errors {
+		respond "{err.status_code} {err.status_text}"
+	}
+}

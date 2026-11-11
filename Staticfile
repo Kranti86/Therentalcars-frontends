@@ -1,0 +1,2 @@
+# Tells Railway (Railpack) this is a static site served from the repo root.
+root: .
