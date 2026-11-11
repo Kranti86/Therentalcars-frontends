@@ -292,6 +292,16 @@ const safeImg=u=>(typeof u==='string'&&/^https:\/\//i.test(u))?esc(u):'';
 function feePct(b){if(b<100)return .38;if(b<200)return .42;if(b<350)return .38;if(b<700)return .36;return .34;}
 function feeOf(b){return b==null?null:Math.round(b*feePct(b)*100)/100;}
 function totalOf(b){return b==null?null:Math.round(b*(1+feePct(b))*100)/100;}
+/* ---- Audience signals (GA4) --------------------------------------------------
+   Rich, consistent event parameters so GA4 audiences can segment by city, travel date,
+   trip length, car type and funnel step. Register city, trip_days, days_until_pickup and
+   vehicle_type as custom dimensions in GA4 to use them in audiences. */
+function tripInfo(){const pu=$('#pu').value,dt=$('#dt').value,p=new Date(pu);
+  return{pickup_date:(pu||'').slice(0,10),dropoff_date:(dt||'').slice(0,10),trip_days:tripDays(),
+    days_until_pickup:isNaN(p)?undefined:Math.max(0,Math.round((p-new Date())/864e5))};}
+function itemOf(c,i){return{item_id:String(c.vehicle_id),item_name:c.name,item_category:c.vehicle_type||'Other',
+  item_brand:c.supplier||'',price:c.price,index:i||0,location_id:(q&&q.label)||''};}
+function setUserProps(p){if(typeof gtag==='function')gtag('set','user_properties',p);}
 function tripDays(){const a=new Date($('#pu').value),b=new Date($('#dt').value);const d=Math.ceil((b-a)/86400000);return d>0?d:1;}
 /* Server quote = the ONLY source of checkout amounts in live mode. Demo mode builds a local one. */
 function demoQuote(car){const days=tripDays(),fee=feesOn()?(car.service_fee||0):0;
@@ -393,12 +403,17 @@ async function run(){
   if(!loc){$('#loc').focus();return;}
   q={lat:loc.lat,lon:loc.lon,label:loc.label,pickup_datetime:$('#pu').value,dropoff_datetime:$('#dt').value,currency:'USD',country:'us',sort};
   if(tripType==='oneway'&&dropLoc){q.dropoff_lat=dropLoc.lat;q.dropoff_lon=dropLoc.lon;q.dropoff_label=dropLoc.label;}
-  track('search',{loc:loc.label,trip:tripType});
+  const ti=tripInfo();
+  track('search',Object.assign({search_term:loc.label,city:loc.label,loc:loc.label,trip:tripType,trip_type:tripType},ti));
+  setUserProps({last_search_city:loc.label,last_trip_days:ti.trip_days,last_days_until_pickup:ti.days_until_pickup});
   $('#pop').style.display='none';$('#results').style.display='block';$('#rloc').textContent=loc.label;$('#out').innerHTML='';$('#load').style.display='block';showAll=false;
   startLoader(demo()?4500:9000);
   window.scrollTo({top:$('#results').offsetTop-10,behavior:'smooth'});
   let r;try{r=demo()?await demoSearch():await live(q);}catch(_){stopLoader();$('#load').style.display='none';$('#out').innerHTML='<div class="empty">Couldn’t load live prices. Please try again.</div>';track('search_error');return;}
   res=r;stopLoader();$('#load').style.display='none';showAll=false;render();track('results',{n:r.cards.length,active:activeCount()});
+  {const pr=r.cards.map(c=>c.price).filter(v=>v!=null);
+   track('view_item_list',Object.assign({item_list_name:q.label,city:q.label,results:r.cards.length,cheapest:pr.length?Math.min(...pr):undefined,
+     items:r.cards.slice(0,10).map(itemOf)},tripInfo()));}
 }
 async function live(qq){const sr=await fetch(`${apiBase()}/search`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(qq)});if(!sr.ok)throw 0;const j=await sr.json();
   for(let i=0;i<40;i++){await new Promise(r=>setTimeout(r,i<3?900:1400));const s=await(await fetch(`${apiBase()}/search/${j.job_id}`)).json();if(s.status==='done')return{cards:s.cards||[],job_id:j.job_id};if(s.status==='error')throw 0;}throw 0;}
@@ -480,6 +495,7 @@ function budgetBuckets(prices){if(prices.length<2)return[];const mx=Math.max(...
 let CO={car:null,ins:null};
 async function openSheet(car){
   CO={car:car,ins:null,quote:null,pendingOrder:null};track('select',{name:car.name,price:car.price});
+  track('view_item',Object.assign({currency:'USD',value:car.price,city:(q&&q.label)||'',vehicle_type:car.vehicle_type||'Other',items:[itemOf(car)]},tripInfo()));
   $('#sheet-in').innerHTML='<div class="empty">Checking the latest price…</div>';toggle(true);$('#sheet').scrollTop=0;
   try{CO.quote=await fetchQuote(car);}catch(e){renderExpired(e);return;}
   if(CO.car!==car)return; // user picked another car meanwhile
@@ -547,6 +563,8 @@ function renderCheckout(){
   const car=CO.car, qt=CO.quote;
   const fee=qt.service_fee, base=qt.base_price, ins=CO.ins?CO.ins.price:0;
   const payNow=payNowOf();
+  track('begin_checkout',Object.assign({currency:'USD',value:payNow,city:(q&&q.label)||'',vehicle_type:car.vehicle_type||'Other',
+    insurance:!!CO.ins,items:[itemOf(car)]},tripInfo()));
   const paid=payNow>0 && !demo() && window.OC.paypal && window.OC.paypal.configured;
   CO.pendingOrder=null;
   const alts=(res?res.cards:[]).filter(c=>c.vehicle_id!==car.vehicle_id).slice(0,3);
@@ -597,7 +615,8 @@ function setupPayPalButtons(){
     const wrap=$('#pay-wrap'); if(!wrap)return; wrap.innerHTML='';
     paypal.Buttons({
       style:{layout:'vertical',color:'gold',shape:'rect',label:'pay',height:45},
-      onClick:(data,actions)=>_checkoutReady()?actions.resolve():actions.reject(),
+      onClick:(data,actions)=>{if(!_checkoutReady())return actions.reject();
+        track('add_payment_info',{currency:'USD',value:payNowOf(),payment_type:'paypal',city:(q&&q.label)||''});return actions.resolve();},
       createOrder:()=>fetch(`${apiBase()}/paypal/create-order`,{method:'POST',headers:{'content-type':'application/json'},
         body:JSON.stringify({job_id:CO.quote.job_id,vehicle_id:CO.car.vehicle_id,insurance:!!CO.ins,customer:_contact()})})
         .then(r=>r.json().then(d=>{if(!r.ok||!d.order_id){CO._orderErr=d;throw new Error(d.message||'order failed');}return d.order_id;})),
@@ -672,7 +691,7 @@ async function submit(orderId){
     job_id:CO.quote.job_id, vehicle_id:car.vehicle_id, insurance:!!CO.ins,
     customer:c,
     search:{trip:tripType},
-    source:{gclid:adClickId||null,utm:params.get('utm_campaign')||null,page:location.href},
+    source:{consent:(function(){try{return localStorage.getItem('trc_consent')||'default'}catch(e){return 'default'}})(),gclid:adClickId||null,utm:params.get('utm_campaign')||null,page:location.href},
     paypal_order_id:orderId||null, funnel:'online'};
 
   let r=null, d=null;
@@ -703,8 +722,10 @@ async function submit(orderId){
       }
       /* GA4 ecommerce purchase — for analytics reporting (keep this OUT of Ads import to avoid double-count). */
       gtag('event','purchase',{transaction_id:cref,value:margin,tax:0,shipping:0,currency:'USD',
-        items:[{item_id:car.vehicle_id,item_name:car.name,item_category:car.vehicle_type||'Car Rental',price:margin,quantity:1}]});
+        city:(q&&q.label)||'',vehicle_type:car.vehicle_type||'Other',trip_days:tripInfo().trip_days,days_until_pickup:tripInfo().days_until_pickup,
+        items:[{item_id:car.vehicle_id,item_name:car.name,item_category:car.vehicle_type||'Car Rental',item_brand:car.supplier||'',location_id:(q&&q.label)||'',price:margin,quantity:1}]});
     }
+    setUserProps({customer:'yes',last_booking_city:(q&&q.label)||''});
     track('reserve',{value:d.pay_now,margin:margin,currency:'USD',name:car.name,insurance:!!CO.ins,paid:!!orderId});
     if(typeof clarity==='function')clarity("event","reservation_success");
   }else{
