@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<!-- Cookie/consent default: non-essential tags stay OFF until the visitor accepts -->
+<script>
+  window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
+  gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied',wait_for_update:500});
+  try{if(localStorage.getItem('trc_consent')==='granted'){gtag('consent','update',{ad_storage:'granted',ad_user_data:'granted',ad_personalization:'granted',analytics_storage:'granted'});}}catch(e){}
+</script>
+<title>Car Rentals — assisted by AI, reserved in seconds</title>
+<meta name="description" content="Compare live car-rental prices from rental suppliers, see your best match, and reserve online — no calls." />
+<link rel="canonical" href="https://online.thecarrentals.globetradee.pro/" />
+<style>
+:root{
+  --bg:#0a0d16; --ink:#f4f6fb; --muted:#9aa4ba; --line:rgba(255,255,255,.10);
+  --panel:rgba(255,255,255,.055); --panel-brd:rgba(255,255,255,.13);
+  --accent:#8b5cf6; --accent-2:#22d3ee; --accent-soft:rgba(139,92,246,.18); --accent-ink:#c7b8ff;
+  --save:#34d399; --save-soft:rgba(52,211,153,.15);
+  --imgtile:#eef1f7;
+  --radius:18px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%;background:var(--bg)}
+body{font-family:'Inter',ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:transparent;color:var(--ink);line-height:1.45;letter-spacing:-.011em;overflow-x:hidden}
+input{color-scheme:dark}
+img{max-width:100%}
+/* aurora backdrop */
+.aurora{position:fixed;inset:0;z-index:-1;overflow:hidden;background:var(--bg)}
+.aurora span{position:absolute;border-radius:50%;filter:blur(72px)}
+.aurora span:nth-child(1){width:380px;height:380px;left:-120px;top:-110px;background:#7c3aed;opacity:.55;animation:fl 10s ease-in-out infinite}
+.aurora span:nth-child(2){width:340px;height:340px;right:-130px;top:120px;background:#06b6d4;opacity:.45;animation:fl 13s ease-in-out infinite}
+.aurora span:nth-child(3){width:320px;height:320px;left:20px;bottom:-150px;background:#ec4899;opacity:.35;animation:fl 16s ease-in-out infinite}
+@keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-26px)}}
+.wrap{max-width:520px;margin:0 auto;padding:0 20px}
+.top{padding:20px 0 4px;display:flex;align-items:center;justify-content:space-between}
+.mark{font-weight:800;font-size:16px;letter-spacing:-.02em;display:flex;align-items:center;gap:8px}
+.mark .b{width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:inline-block;box-shadow:0 0 16px rgba(139,92,246,.5)}
+.mark span{color:var(--muted);font-weight:500}
+.hero{padding:26px 0 6px}
+.hero h1{font-size:32px;line-height:1.06;letter-spacing:-.03em;font-weight:800}
+.hero h1 em{font-style:normal;background:linear-gradient(120deg,#c4b5fd,#67e8f9);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{margin-top:12px;color:var(--muted);font-size:14.5px;max-width:32ch}
+.trip{display:inline-flex;background:var(--panel);border:1px solid var(--panel-brd);border-radius:999px;padding:4px;margin-top:20px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.trip button{border:0;background:none;font-family:inherit;font-size:13px;font-weight:700;color:var(--muted);padding:8px 16px;border-radius:999px;cursor:pointer}
+.trip button.on{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#07131c}
+.search{margin-top:12px;border:1px solid var(--panel-brd);border-radius:var(--radius);background:var(--panel);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);position:relative;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+.f{padding:14px 16px;position:relative}
+.f + .f{border-top:1px solid var(--line)}
+.f label{display:block;font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.f input{width:100%;min-width:0;border:0;outline:0;background:transparent;font-size:16px;font-weight:700;color:var(--ink);margin-top:5px;font-family:inherit}
+.f input::placeholder{color:#6b748a;font-weight:600}
+.two{display:flex}.two .f{flex:1}.two .f + .f{border-top:0;border-left:1px solid var(--line)}
+.two .f input[type=datetime-local]{font-size:13px}
+#do-loc-wrap{display:none}
+.go{width:100%;margin-top:14px;border:0;border-radius:14px;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#07131c;font-size:16px;font-weight:800;padding:16px;cursor:pointer;font-family:inherit;box-shadow:0 12px 30px rgba(124,58,237,.45)}
+.go:active{transform:translateY(1px)}
+.ai{margin-top:16px;display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--muted)}
+.ai .p{width:8px;height:8px;border-radius:50%;background:var(--accent-2);box-shadow:0 0 12px var(--accent-2);flex:0 0 auto}
+.ac{position:absolute;left:8px;right:8px;top:100%;margin-top:8px;background:rgba(18,22,34,.96);border:1px solid var(--panel-brd);border-radius:14px;box-shadow:0 20px 50px rgba(0,0,0,.5);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);z-index:30;overflow:hidden;display:none}
+.ac.open{display:block}
+.ac-item{display:flex;align-items:center;gap:12px;padding:13px 15px;cursor:pointer}
+.ac-item + .ac-item{border-top:1px solid var(--line)}
+.ac-item:active{background:var(--accent-soft)}
+.ac-ico{width:26px;height:26px;border-radius:7px;background:var(--accent-soft);color:var(--accent-ink);display:flex;align-items:center;justify-content:center;font-size:13px;flex:0 0 auto}
+.ac-l{font-size:14.5px;font-weight:700}.ac-s{font-size:12px;color:var(--muted)}
+.ac-iata{margin-left:auto;font-size:11px;font-weight:800;color:var(--accent-ink)}
+.pop{padding:28px 0 8px}
+.pop h3{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;padding:0 2px 12px}
+.pop-scroll{display:flex;gap:12px;overflow-x:auto;padding:0 2px 6px;scrollbar-width:none}
+.pop-scroll::-webkit-scrollbar{display:none}
+.dcard{flex:0 0 auto;width:150px;cursor:pointer}
+.dcard .im{height:96px;border-radius:14px;display:flex;align-items:flex-end;padding:10px;color:#fff;font-size:26px;position:relative;overflow:hidden;box-shadow:0 10px 24px rgba(0,0,0,.35)}
+.dcard .im::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent,rgba(0,0,0,.3))}
+.dcard .nm{font-weight:700;font-size:14px;margin-top:9px}
+.dcard .fr{font-size:12px;color:var(--muted)}
+.results{padding:6px 0 40px;display:none}
+.rmeta{display:flex;align-items:baseline;justify-content:space-between;padding:18px 2px 4px}
+.rmeta .loc{font-size:16px;font-weight:800}
+.rmeta .fresh{font-size:12px;color:var(--save);font-weight:600}
+.sort{display:flex;gap:8px;padding:8px 2px 14px}
+.sort button{border:1px solid var(--panel-brd);background:var(--panel);font-family:inherit;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;padding:7px 14px;border-radius:999px}
+.sort button.on{background:var(--accent-soft);border-color:transparent;color:var(--accent-ink)}
+.sortrow{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 2px 10px}
+.sortrow .sort{padding:0}
+.rcount{font-size:12px;color:var(--muted);font-weight:600;white-space:nowrap}
+.filters{margin:0 0 12px}
+.ftoggle{width:100%;text-align:left;background:var(--panel);border:1px solid var(--panel-brd);color:var(--ink);border-radius:12px;padding:12px 14px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;backdrop-filter:blur(10px)}
+.ftoggle b{color:var(--accent-ink)}
+.ftoggle .fchev{margin-left:auto;color:var(--muted);font-size:11px}
+.fbody{border:1px solid var(--panel-brd);border-top:0;border-radius:0 0 12px 12px;padding:14px;margin-top:-4px;background:var(--panel)}
+.fintro{font-size:12.5px;color:var(--muted);margin-bottom:14px}
+.fgrp{margin-bottom:13px}
+.fh{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px}
+.fchips{display:flex;flex-wrap:wrap;gap:7px}
+.fchip{font-size:12.5px;font-weight:700;color:var(--muted);background:transparent;border:1px solid var(--panel-brd);border-radius:999px;padding:7px 12px;cursor:pointer;font-family:inherit}
+.fchip.on{background:var(--accent-soft);border-color:transparent;color:var(--accent-ink)}
+.fclear{margin-top:2px;background:none;border:0;color:var(--accent-ink);font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;padding:4px 0}
+.fnote{font-size:12.5px;color:var(--accent-ink);font-weight:600;margin:2px 2px 12px}
+.load{padding:26px 2px 8px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.ld-ring{position:relative;width:64px;height:64px;margin:0 auto 16px}
+.ld-ring i{position:absolute;inset:0;border-radius:50%;border:3px solid rgba(255,255,255,.08);border-top-color:var(--accent-2);animation:sp .9s linear infinite;box-shadow:0 0 20px rgba(34,211,238,.35)}
+.ld-ring b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:26px}
+.ld-stage{text-align:center;font-weight:800;font-size:16.5px;letter-spacing:-.01em;transition:opacity .2s}
+.ld-sub{text-align:center;color:var(--muted);font-size:12.5px;margin-top:5px}
+.ld-bar{height:6px;background:rgba(255,255,255,.08);border-radius:999px;margin:16px auto 0;max-width:300px;overflow:hidden}
+.ld-bar i{display:block;height:100%;width:4%;background:linear-gradient(90deg,var(--accent),var(--accent-2));border-radius:999px;box-shadow:0 0 14px rgba(34,211,238,.5)}
+.ld-sup{text-align:center;margin-top:14px;min-height:26px}
+.sc-chip{display:inline-block;font-size:11.5px;font-weight:700;color:var(--save);background:var(--save-soft);border-radius:999px;padding:3px 9px;margin:3px;animation:pop .3s ease}
+@keyframes pop{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
+.ld-tip{text-align:center;color:var(--muted);font-size:12px;margin-top:16px;padding:0 20px;line-height:1.5}
+.best{border:1.5px solid rgba(139,92,246,.55);border-radius:var(--radius);padding:18px;margin:10px 0 22px;position:relative;background:linear-gradient(180deg,rgba(139,92,246,.16),rgba(34,211,238,.04));backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 20px 44px rgba(124,58,237,.22)}
+.best .tag{position:absolute;top:-11px;left:16px;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#07131c;font-size:10.5px;font-weight:800;letter-spacing:.04em;padding:4px 11px;border-radius:999px;box-shadow:0 6px 16px rgba(124,58,237,.5)}
+.best .r1{display:flex;justify-content:space-between;align-items:flex-start;gap:14px}
+.best .nm{font-size:19px;font-weight:800;letter-spacing:-.02em}
+.best .kl{font-size:12.5px;color:var(--muted);margin-top:2px}
+.best .pr{font-size:26px;font-weight:800;letter-spacing:-.03em;white-space:nowrap;color:#fff}
+.best .pd{font-size:11px;color:var(--muted);text-align:right}
+.best .im{height:124px;border-radius:12px;background:var(--imgtile);display:flex;align-items:center;justify-content:center;margin:14px 0;position:relative;overflow:hidden}
+.best .im svg{width:120px;height:70px}
+.best .im img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:14px;background:var(--imgtile)}
+.best .meta{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);flex-wrap:wrap}
+.best .sc{color:var(--save);font-weight:700}
+.pick{margin-top:16px;width:100%;border:0;border-radius:13px;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#07131c;font-size:15px;font-weight:800;padding:15px;cursor:pointer;font-family:inherit;box-shadow:0 10px 24px rgba(124,58,237,.4)}
+.row{display:flex;align-items:center;gap:14px;padding:15px 4px;cursor:pointer}
+.row + .row{border-top:1px solid var(--line)}
+.row .im{width:78px;height:54px;border-radius:10px;background:var(--imgtile);flex:0 0 auto;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.row .im svg{width:56px;height:34px}
+.row .im img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:5px;background:var(--imgtile)}
+.row .mid{flex:1;min-width:0}.row .nm{font-size:15px;font-weight:700}
+.row .sub{font-size:12.5px;color:var(--muted);margin-top:2px}
+.row .tt{display:inline-block;font-size:10.5px;font-weight:700;color:var(--accent-ink);background:var(--accent-soft);padding:1px 7px;border-radius:5px;margin-top:5px}
+.row .pr{font-size:17px;font-weight:800;letter-spacing:-.02em;text-align:right;white-space:nowrap}
+.row .pd{font-size:11px;color:var(--muted);text-align:right}
+.more{width:100%;margin-top:20px;border:1px solid var(--panel-brd);background:var(--panel);border-radius:13px;padding:14px;font-size:14px;font-weight:700;color:var(--accent-ink);cursor:pointer;font-family:inherit}
+.ov{position:fixed;inset:0;background:rgba(3,5,12,.6);z-index:60;opacity:0;pointer-events:none;transition:opacity .2s;backdrop-filter:blur(3px)}
+.ov.open{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:70;background:rgba(14,18,30,.94);border-top:1px solid var(--panel-brd);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-radius:24px 24px 0 0;transform:translateY(100%);transition:transform .3s cubic-bezier(.2,.8,.2,1);max-height:94vh;overflow-y:auto;padding-bottom:calc(20px + env(safe-area-inset-bottom))}
+.sheet.open{transform:translateY(0)}
+.sheet .in{max-width:520px;margin:0 auto;padding:8px 22px 0;color:var(--ink)}
+.grab{width:38px;height:4px;border-radius:99px;background:rgba(255,255,255,.2);margin:12px auto 6px}
+.sheet h2{font-size:21px;font-weight:800;letter-spacing:-.02em;margin-top:8px}
+.sheet .plg{font-size:14px;color:var(--muted);margin-top:3px}
+.dhero{height:150px;border-radius:14px;background:var(--imgtile);display:flex;align-items:center;justify-content:center;margin-top:14px;position:relative;overflow:hidden}
+.dhero svg{width:120px;height:72px}.dhero img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:16px;background:var(--imgtile)}
+.supbox{margin-top:14px;background:var(--accent-soft);border:1px solid rgba(139,92,246,.3);border-radius:12px;padding:13px 14px}
+.supbox .s1{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14.5px}
+.supbox .sc{color:var(--save);font-weight:800;font-size:12.5px;background:var(--save-soft);padding:1px 6px;border-radius:5px}
+.supbox .ad{font-size:12.5px;color:var(--muted);margin-top:6px;line-height:1.4}
+.sum{margin-top:14px}
+.sum .l{display:flex;justify-content:space-between;font-size:14px;padding:10px 0;border-bottom:1px solid var(--line);color:var(--muted)}
+.sum .l b{color:var(--ink);font-weight:600;white-space:nowrap}
+.sum .l.tot b{font-size:17px}
+.fld{margin-top:14px}.fld label{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.fld input{width:100%;margin-top:6px;border:1px solid var(--panel-brd);background:rgba(255,255,255,.05);color:var(--ink);border-radius:12px;padding:14px;font-size:16px;outline:0;font-family:inherit}
+.fld input::placeholder{color:#6b748a}
+.fld input:focus{border-color:var(--accent)}
+.cf{width:100%;margin-top:18px;border:0;border-radius:13px;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#07131c;font-size:16px;font-weight:800;padding:16px;cursor:pointer;font-family:inherit;box-shadow:0 12px 28px rgba(124,58,237,.4)}
+.insopt{margin-top:18px;border:1.5px solid rgba(139,92,246,.6);border-radius:14px;padding:14px;cursor:pointer;background:var(--accent-soft)}
+.waive{width:100%;margin-top:10px;border:1px solid var(--panel-brd);background:transparent;color:var(--muted);border-radius:13px;padding:14px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
+.fine{font-size:11.5px;color:var(--muted);text-align:center;margin-top:12px;line-height:1.6}
+.alt h4{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:22px 0 4px}
+.alt .row{padding:12px 0}
+.done{text-align:center;padding:30px 6px}
+.done .ck{width:58px;height:58px;border-radius:50%;background:var(--save-soft);color:var(--save);font-size:28px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;box-shadow:0 0 30px rgba(52,211,153,.35)}
+.done h2{font-size:22px}
+footer{padding:30px 0 44px;text-align:center;color:var(--muted);font-size:11.5px;line-height:1.7}
+footer a{color:var(--muted)}
+.empty{padding:44px 8px;text-align:center;color:var(--muted);font-size:14px}
+@keyframes datePulse{0%,100%{box-shadow:0 0 0 0 rgba(18,184,134,0)}50%{box-shadow:0 0 0 4px rgba(18,184,134,.45)}}
+.date-nudge{animation:datePulse 1s ease-in-out 3;border-color:#12b886 !important}
+.chk{display:flex;gap:11px;align-items:flex-start;font-size:12.5px;color:var(--muted);margin:9px 0;line-height:1.5;cursor:pointer;background:var(--panel);border:1px solid var(--panel-brd);border-radius:12px;padding:12px 14px}
+.chk input{margin-top:1px;width:18px;height:18px;flex:none;accent-color:var(--accent)}
+.chk a{color:var(--accent-ink);text-decoration:underline}
+.chk b{color:var(--ink);font-weight:700}
+.ppf{background:var(--panel);border:1px solid var(--panel-brd);border-radius:12px;height:48px;padding:0 12px;display:flex;align-items:center}
+.cf2{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.cf:disabled{opacity:.5;cursor:not-allowed}
+.rv .ck{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#07131c;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;margin:6px auto 8px}
+.rvref{text-align:center;color:var(--muted);font-size:13px;margin-bottom:8px}
+.rvref b{color:var(--ink);letter-spacing:.06em}
+.rvcard{background:var(--panel);border:1px solid var(--panel-brd);border-radius:14px;padding:4px 14px;margin:10px 0}
+.rvrow{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--panel-brd);font-size:13.5px}
+.rvrow:last-child{border-bottom:0}
+.rvrow span{color:var(--muted)}.rvrow b{color:var(--ink);text-align:right}
+.rvbtns{display:flex;gap:10px;margin-top:16px}
+.rvbtns .cf{flex:1;margin:0}
+.cf.ghost{background:transparent;border:1px solid var(--panel-brd);color:var(--ink);display:flex;align-items:center;justify-content:center;text-decoration:none}
+</style>
+</head>
+<body>
+<div class="aurora"><span></span><span></span><span></span></div>
+<div class="wrap">
+  <div class="top"><div class="mark"><span class="b"></span>The Rental Cars<span></span></div></div>
+  <section class="hero">
+    <h1 id="h1">Your Car Rental,<br><em>found by AI.</em></h1>
+    <p id="sub">We compare live prices from rental suppliers for your dates and surface your best match — reserve online in seconds.</p>
+    <div class="trip" id="trip">
+      <button class="on" data-trip="round">Round trip</button>
+      <button data-trip="oneway">One way</button>
+    </div>
+    <div class="search">
+      <div class="f">
+        <label id="pu-loc-label">Where to</label>
+        <input id="loc" type="text" autocomplete="off" placeholder="City, airport or ZIP" />
+        <div class="ac" id="ac"></div>
+      </div>
+      <div class="f" id="do-loc-wrap">
+        <label>Drop-off location</label>
+        <input id="loc2" type="text" autocomplete="off" placeholder="Different drop-off city / airport" />
+        <div class="ac" id="ac2"></div>
+      </div>
+      <div class="two">
+        <div class="f"><label>Pick-up</label><input id="pu" type="datetime-local" /></div>
+        <div class="f"><label>Drop-off</label><input id="dt" type="datetime-local" /></div>
+      </div>
+    </div>
+    <button class="go" id="go">Find my best match</button>
+    <div class="ai"><span class="p"></span> Live prices from major rental suppliers</div>
+  </section>
+  <section class="pop" id="pop">
+    <h3>Popular destinations</h3>
+    <div class="pop-scroll" id="pop-scroll"></div>
+  </section>
+  <section class="results" id="results">
+    <div class="rmeta"><div class="loc" id="rloc">Results</div><div class="fresh" id="rfresh">● Live prices</div></div>
+    <div class="sortrow">
+      <div class="sort" id="sort">
+        <button class="on" data-sort="cheapest">Best value</button>
+        <button data-sort="closest">Closest</button>
+      </div>
+      <span id="rcount" class="rcount"></span>
+    </div>
+    <div id="filters" class="filters"></div>
+    <div id="load" class="load" style="display:none">
+      <div class="ld-ring"><i></i><b>🚗</b></div>
+      <div class="ld-stage" id="ld-stage">Searching suppliers…</div>
+      <div class="ld-sub" id="ld-count">Scanning live prices…</div>
+      <div class="ld-bar"><i id="ld-fill"></i></div>
+      <div class="ld-sup" id="ld-sup"></div>
+      <div class="ld-tip">Great rates take a few seconds — we’re comparing live offers for your dates.</div>
+    </div>
+    <div id="out"></div>
+  </section>
+  <footer>
+    <div><a href="#" id="find-res" style="color:var(--accent-ink);text-decoration:underline">Find my reservation</a> · © Therentalcars · <a href="/terms.html">Terms</a> · <a href="/privacy.html">Privacy</a></div>
+    <div style="margin-top:6px">Prices are live estimates from partner suppliers. The rental agreement is completed with the supplier; the driver presents their own licence and card.</div>
+  </footer>
+</div>
+<div class="ov" id="ov"></div>
+<div class="sheet" id="sheet"><div class="in"><div class="grab"></div><div id="sheet-in"></div></div></div>
+<script>
+/* ===================== CONFIG — separate online funnel ===================== */
+const CONFIG = {
+  API_BASE: "https://carfinder1-d20ebee21d98.herokuapp.com",   // your backend
+  DEMO: false,
+  CUR: "$",
+  REQUEST_ENDPOINT: "/requests",
+  GA4_ID: "G-HJ6XYK06QT",   // Your GA4 Measurement ID
+  // send_to from your Google Ads "Reserve (online)" conversion action. Leave "" to disable.
+  ADS_CONVERSION: "AW-16992622622/F5dQCO_24NgcEJ6w26Y_",
+  // Display-only fallback for demo mode. Live amounts always come from the backend (/quote).
+  INSURANCE: { enabled:true, label:"Full Coverage (CDW + theft)", price_per_day:12.59 },
+};
+const $=(s,e=document)=>e.querySelector(s), $$=(s,e=document)=>Array.from(e.querySelectorAll(s));
+const params=new URLSearchParams(location.search);
+const apiBase=()=>CONFIG.API_BASE.replace(/\/$/,'');
+const demo=()=>(!CONFIG.API_BASE)||params.get('demo')==='1';
+window.trcOnline=window.trcOnline||[];
+function track(ev,d={}){window.trcOnline.push(Object.assign({ev,t:Date.now()},d));if(CONFIG.GA4_ID&&typeof gtag==='function')gtag('event',ev,d);}
+(function(){if(!CONFIG.GA4_ID)return;const s=document.createElement('script');s.async=1;s.src='https://www.googletagmanager.com/gtag/js?id='+CONFIG.GA4_ID;document.head.appendChild(s);window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(arguments)};gtag('js',new Date());gtag('config',CONFIG.GA4_ID);
+  /* Also initialize the Google Ads tag so the conversion send_to actually lands. */
+  if(CONFIG.ADS_CONVERSION){var aw=CONFIG.ADS_CONVERSION.split('/')[0];if(aw)gtag('config',aw);}})();
+/* Escape anything that came from the API / URL before it goes into innerHTML. */
+const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const safeImg=u=>(typeof u==='string'&&/^https:\/\//i.test(u))?esc(u):'';
+function feePct(b){if(b<100)return .38;if(b<200)return .42;if(b<350)return .38;if(b<700)return .36;return .34;}
+function feeOf(b){return b==null?null:Math.round(b*feePct(b)*100)/100;}
+function totalOf(b){return b==null?null:Math.round(b*(1+feePct(b))*100)/100;}
+function tripDays(){const a=new Date($('#pu').value),b=new Date($('#dt').value);const d=Math.ceil((b-a)/86400000);return d>0?d:1;}
+/* Server quote = the ONLY source of checkout amounts in live mode. Demo mode builds a local one. */
+function demoQuote(car){const days=tripDays(),fee=feesOn()?(car.service_fee||0):0;
+  const ins=CONFIG.INSURANCE.enabled?{label:CONFIG.INSURANCE.label,days,price:Math.round(CONFIG.INSURANCE.price_per_day*days*100)/100}:null;
+  return{fees_on:feesOn(),base_price:car.base_price!=null?car.base_price:car.price,service_fee:fee,insurance:ins,days,
+    pay_now_without_insurance:fee,pay_now_with_insurance:Math.round((fee+(ins?ins.price:0))*100)/100};}
+async function fetchQuote(car){
+  if(demo())return demoQuote(car);
+  const r=await fetch(`${apiBase()}/quote`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({job_id:res&&res.job_id,vehicle_id:car.vehicle_id})});
+  const d=await r.json().catch(()=>({}));
+  if(!r.ok){const e=new Error(d.message||'quote failed');e.code=d.error;throw e;}
+  return d;}
+const payNowOf=()=>CO.ins?CO.quote.pay_now_with_insurance:CO.quote.pay_now_without_insurance;
+const tc=s=>(s||'').replace(/[-_]/g,' ').replace(/\b\w/g,c=>c.toUpperCase()).trim();
+(function seo(){const place=tc(params.get('city'))||((params.get('iata')||'').toUpperCase()?(params.get('iata').toUpperCase()+' Airport'):'');if(!place)return;
+  document.title=`Car rental in ${place} — reserve online`;$('meta[name=description]').setAttribute('content',`Compare live car-rental prices in ${place} and reserve online in seconds.`);
+  $('#h1').innerHTML=`Car rental<br><em>in ${esc(place)}.</em>`;$('#loc').value=place;
+  const ld={"@context":"https://schema.org","@type":"AutoRental","name":`Therentalcars — ${place}`,"areaServed":place,"url":location.href,"priceRange":"$$"};
+  const t=document.createElement('script');t.type='application/ld+json';t.textContent=JSON.stringify(ld);document.head.appendChild(t);})();
+const pad=n=>String(n).padStart(2,'0'),iso=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+(function(){const p=new Date();p.setDate(p.getDate()+7);p.setHours(10,0,0,0);const o=new Date(p);o.setDate(o.getDate()+3);$('#pu').value=iso(p);$('#dt').value=iso(o);})();
+/* online config: admin service-fee toggle + PayPal SDK. Defaults keep the paid flow. */
+window.OC={service_fee_enabled:true,paypal:{clientId:'',env:'sandbox',configured:false}};
+function feesOn(){return window.OC.service_fee_enabled!==false;}
+(async function(){ if(demo())return; try{const r=await fetch(`${apiBase()}/online-config`); if(r.ok){window.OC=await r.json(); if(window.OC.insurance)Object.assign(CONFIG.INSURANCE,window.OC.insurance);}}catch(e){} })();
+let _ppLoaded=null;
+function loadPayPal(){
+  if(_ppLoaded)return _ppLoaded;
+  const cid=window.OC.paypal&&window.OC.paypal.clientId;
+  if(!cid){_ppLoaded=Promise.reject('no paypal client id');return _ppLoaded;}
+  _ppLoaded=new Promise((res,rej)=>{const s=document.createElement('script');
+    s.src=`https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(cid)}&components=card-fields&intent=authorize&currency=USD`;
+    s.onload=res;s.onerror=rej;document.head.appendChild(s);});
+  return _ppLoaded;
+}
+let tripType='round';
+$('#trip').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;$$('#trip button').forEach(x=>x.classList.remove('on'));b.classList.add('on');tripType=b.dataset.trip;
+  $('#do-loc-wrap').style.display=tripType==='oneway'?'block':'none';track('trip_type',{type:tripType});});
+const DS=[
+ {label:"Miami International Airport",sublabel:"Miami, FL",type:"airport",lat:25.7959,lon:-80.287,iata:"MIA"},
+ {label:"Miami",sublabel:"Miami-Dade County, FL",type:"city",lat:25.7743,lon:-80.1919,iata:null},
+ {label:"Orlando International Airport",sublabel:"Orlando, FL",type:"airport",lat:28.4312,lon:-81.3081,iata:"MCO"},
+ {label:"Los Angeles International",sublabel:"Los Angeles, CA",type:"airport",lat:33.9416,lon:-118.4085,iata:"LAX"},
+ {label:"Harry Reid International",sublabel:"Las Vegas, NV",type:"airport",lat:36.084,lon:-115.1537,iata:"LAS"},
+];
+function attachAC(input,acEl,onPick){
+  let tmr=null;
+  input.addEventListener('input',e=>{const q=e.target.value.trim();clearTimeout(tmr);if(q.length<3){acEl.classList.remove('open');return;}tmr=setTimeout(async()=>{
+    let it=[];if(demo()){it=DS.filter(s=>s.label.toLowerCase().includes(q.toLowerCase()));if(!it.length)it=DS;}else{try{it=await(await fetch(`${apiBase()}/suggest?q=${encodeURIComponent(q)}`)).json();}catch(_){it=[];}}
+    if(!it.length){acEl.classList.remove('open');return;}
+    acEl.innerHTML=it.map((s,i)=>`<div class="ac-item" data-i="${i}"><span class="ac-ico">${s.type==='airport'?'✈':s.type==='zip'?'#':'◉'}</span><div><div class="ac-l">${esc(s.label)}</div><div class="ac-s">${esc(s.sublabel)}</div></div>${s.iata?`<span class="ac-iata">${esc(s.iata)}</span>`:''}</div>`).join('');
+    acEl.classList.add('open');
+    $$('.ac-item',acEl).forEach(x=>x.addEventListener('click',()=>{const s=it[+x.dataset.i];input.value=s.label+(s.iata?` (${s.iata})`:'');acEl.classList.remove('open');onPick(s);}));
+  },170);});
+}
+let pickLoc=null, dropLoc=null;
+attachAC($('#loc'),$('#ac'),s=>{pickLoc=s;track('suggest_select',{loc:s.label});});
+attachAC($('#loc2'),$('#ac2'),s=>{dropLoc=s;});
+document.addEventListener('click',e=>{if(!e.target.closest('.f')){$('#ac').classList.remove('open');$('#ac2').classList.remove('open');}});
+const POP=[
+ {city:"Miami",lat:25.7743,lon:-80.1919,grad:"linear-gradient(135deg,#06b6d4,#3b82f6)",emo:"🌴"},
+ {city:"Orlando",lat:28.5383,lon:-81.3792,grad:"linear-gradient(135deg,#f59e0b,#ef4444)",emo:"🎢"},
+ {city:"Las Vegas",lat:36.1699,lon:-115.1398,grad:"linear-gradient(135deg,#8b5cf6,#ec4899)",emo:"🎰"},
+ {city:"Los Angeles",lat:34.0522,lon:-118.2437,grad:"linear-gradient(135deg,#f97316,#f43f5e)",emo:"🌇"},
+ {city:"New York",lat:40.7128,lon:-74.006,grad:"linear-gradient(135deg,#334155,#0ea5e9)",emo:"🗽"},
+];
+$('#pop-scroll').innerHTML=POP.map((d,i)=>`<div class="dcard" data-i="${i}"><div class="im" style="background:${d.grad}">${d.emo}</div><div class="nm">${d.city}</div><div class="fr" id="pop-fr-${i}">Live prices</div></div>`).join('');
+/* "from $X/day" only when the backend has a real cached figure — cache_only, so it never spends a booking credit. */
+if(!demo())POP.forEach((d,i)=>{fetch(`${apiBase()}/stats?lat=${d.lat}&lon=${d.lon}&city=${encodeURIComponent(d.city)}&cache_only=true`)
+  .then(r=>r.ok?r.json():null).then(s=>{if(s&&s.cheapest_per_day){const el=$('#pop-fr-'+i);if(el)el.textContent=`from ${CONFIG.CUR}${Math.round(s.cheapest_per_day)}/day`;}}).catch(()=>{});});
+$$('#pop-scroll .dcard').forEach(el=>el.addEventListener('click',()=>{const d=POP[+el.dataset.i];pickLoc={label:d.city,lat:d.lat,lon:d.lon,iata:null};$('#loc').value=d.city;track('popular_click',{city:d.city});run();}));
+const LSTAGES=['Searching suppliers…','Comparing live prices…','Checking availability…','Finding your best match…','Sorting by best value…'];
+let LT=[];
+function startLoader(dur){
+  const st=$('#ld-stage'),ct=$('#ld-count'),fl=$('#ld-fill'),sp=$('#ld-sup');
+  sp.innerHTML='';st.textContent=LSTAGES[0];ct.textContent='Scanning live prices…';
+  fl.style.transition='none';fl.style.width='4%';
+  requestAnimationFrame(()=>{fl.style.transition=`width ${dur}ms cubic-bezier(.2,.6,.2,1)`;fl.style.width='94%';});
+  let si=0;LT.push(setInterval(()=>{si=Math.min(si+1,LSTAGES.length-1);st.style.opacity=0;setTimeout(()=>{st.textContent=LSTAGES[si];st.style.opacity=1;},180);},Math.max(1300,Math.round(dur/5))));
+}
+function stopLoader(){LT.forEach(clearInterval);LT=[];}
+let sort='cheapest',res=null,q=null,showAll=false;
+const F={types:new Set(),suppliers:new Set(),seats:0,budget:Infinity,distKm:Infinity,area:null};
+let fOpen=false;
+function applyFilters(cards){let a=cards||[];
+  if(F.types.size)a=a.filter(c=>F.types.has(c.vehicle_type||'Other'));
+  if(F.suppliers.size)a=a.filter(c=>F.suppliers.has(c.supplier));
+  if(F.seats)a=a.filter(c=>(c.seats||0)>=F.seats);
+  if(F.area)a=a.filter(c=>(c.pickup_location||'').toLowerCase().includes(F.area.toLowerCase()));
+  if(isFinite(F.distKm))a=a.filter(c=>c.distance_km!=null&&c.distance_km<=F.distKm);
+  if(isFinite(F.budget))a=a.filter(c=>c.price!=null&&c.price<=F.budget);
+  return a;}
+function activeCount(){return F.types.size+F.suppliers.size+(F.seats?1:0)+(isFinite(F.budget)?1:0)+(isFinite(F.distKm)?1:0)+(F.area?1:0);}
+$('#go').addEventListener('click',run);
+{const _fr=$('#find-res'); if(_fr)_fr.addEventListener('click',e=>{e.preventDefault();openLookup();});}
+$('#sort').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;$$('#sort button').forEach(x=>x.classList.remove('on'));b.classList.add('on');sort=b.dataset.sort;if(res)render();});
+async function run(){
+  const loc=pickLoc||(demo()?(DS.find(s=>s.label.toLowerCase().includes(($('#loc').value||'').toLowerCase()))||DS[0]):null);
+  if(!loc){$('#loc').focus();return;}
+  q={lat:loc.lat,lon:loc.lon,label:loc.label,pickup_datetime:$('#pu').value,dropoff_datetime:$('#dt').value,currency:'USD',country:'us',sort};
+  if(tripType==='oneway'&&dropLoc){q.dropoff_lat=dropLoc.lat;q.dropoff_lon=dropLoc.lon;q.dropoff_label=dropLoc.label;}
+  track('search',{loc:loc.label,trip:tripType});
+  $('#pop').style.display='none';$('#results').style.display='block';$('#rloc').textContent=loc.label;$('#out').innerHTML='';$('#load').style.display='block';showAll=false;
+  startLoader(demo()?4500:9000);
+  window.scrollTo({top:$('#results').offsetTop-10,behavior:'smooth'});
+  let r;try{r=demo()?await demoSearch():await live(q);}catch(_){stopLoader();$('#load').style.display='none';$('#out').innerHTML='<div class="empty">Couldn’t load live prices. Please try again.</div>';track('search_error');return;}
+  res=r;stopLoader();$('#load').style.display='none';showAll=false;render();track('results',{n:r.cards.length,active:activeCount()});
+}
+async function live(qq){const sr=await fetch(`${apiBase()}/search`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(qq)});if(!sr.ok)throw 0;const j=await sr.json();
+  for(let i=0;i<40;i++){await new Promise(r=>setTimeout(r,i<3?900:1400));const s=await(await fetch(`${apiBase()}/search/${j.job_id}`)).json();if(s.status==='done')return{cards:s.cards||[],job_id:j.job_id};if(s.status==='error')throw 0;}throw 0;}
+async function demoSearch(){await new Promise(r=>setTimeout(r,4500));
+  return{cards:DEMO_BASE.map(c=>{const b=c.price;return Object.assign({},c,{base_price:b,service_fee:feeOf(b),price:totalOf(b),original_price:c.original_price?totalOf(c.original_price):null});})};}
+function order(c,m){const a=c.slice(),P=x=>x.price==null?1/0:x.price,D=x=>x.distance_km==null?1/0:x.distance_km;if(m==='closest')a.sort((x,y)=>D(x)-D(y)||P(x)-P(y));else a.sort((x,y)=>P(x)-P(y)||D(x)-D(y));return a;}
+const SVG=`<svg viewBox="0 0 100 56" fill="none"><path d="M8 40c0-3 2-5 5-5h74c3 0 5 2 5 5v3H8z" fill="#c7ccdb"/><path d="M20 35l8-13c1-2 3-3 5-3h24c2 0 4 1 5 3l8 13z" fill="#b3bacb"/><circle cx="28" cy="43" r="7" fill="#6b7280"/><circle cx="72" cy="43" r="7" fill="#6b7280"/></svg>`;
+/* Exact amounts: whole dollars when whole, otherwise cents — the button must match the hold. */
+const money=v=>{if(v==null||isNaN(v))return '—';const n=Math.round(Number(v)*100)/100;return CONFIG.CUR+(n%1?n.toFixed(2):String(n));};
+const img=src=>`<div class="im">${SVG}${safeImg(src)?`<img src="${safeImg(src)}" onerror="this.remove()" alt="">`:''}</div>`;
+function render(){
+  if(!res)return;
+  if(!feesOn())res.cards.forEach(c=>{if(c.base_price!=null)c.price=c.base_price;c.service_fee=0;});
+  renderFilters(res.cards);
+  let vis=applyFilters(res.cards),note='';
+  if(!vis.length&&isFinite(F.budget)&&res.cards.length){
+    vis=res.cards.slice().sort((a,b)=>Math.abs((a.price||1e9)-F.budget)-Math.abs((b.price||1e9)-F.budget)).slice(0,5);
+    note=`Nothing exactly within ${money(F.budget)} — here are the closest matches:`;
+  }
+  $('#rcount').textContent=vis.length?`${vis.length} match${vis.length>1?'es':''}`:'';
+  paint(order(vis,sort),note);
+}
+function paint(cards,note){
+  const out=$('#out');
+  const nb=note?`<div class="fnote">${note}</div>`:'';
+  if(!cards.length){out.innerHTML=nb+`<div class="empty">${activeCount()?'No cars match your filters — loosen one to see more.':'No cars for these dates. Try adjusting your times.'}</div>`;return;}
+  const best=cards[0],rest=cards.slice(1),shown=showAll?rest:rest.slice(0,4);
+  out.innerHTML=nb+`
+    <div class="best">
+      <div class="tag">${sort==='closest'?'CLOSEST':'★ BEST MATCH'}</div>
+      <div class="r1"><div><div class="nm">${esc(best.name||'Vehicle')}</div><div class="kl">${esc(best.vehicle_type)}${best.transmission?' · '+esc(best.transmission):''} · ${esc(best.seats||5)} seats</div></div>
+        <div><div class="pr">${money(best.price)}</div><div class="pd">${esc(best.price_duration||'total')}</div></div></div>
+      ${img(best.image)}
+      <div class="meta">${esc(best.supplier)}${best.supplier_rating?` · <span class="sc">${esc(best.supplier_rating)}</span>`:''}${best.free_cancellation?' · Free cancellation':''}${best.distance_km!=null?` · ${Number(best.distance_km).toFixed(1)} km`:''}</div>
+      <button class="pick" data-b="1">Reserve this car</button>
+    </div>
+    ${shown.map((c,i)=>`<div class="row" data-i="${i}">${img(c.image)}
+      <div class="mid"><div class="nm">${esc(c.name||'Vehicle')}</div><div class="sub">${esc(c.supplier)}${c.supplier_rating?' · '+esc(c.supplier_rating):''}${c.free_cancellation?' · Free cancel':''}</div><span class="tt">${esc(c.vehicle_type)}</span></div>
+      <div><div class="pr">${money(c.price)}</div><div class="pd">${esc(c.price_duration)}</div></div></div>`).join('')}
+    ${(!showAll&&rest.length>4)?`<button class="more" id="more">Show ${rest.length-4} more options</button>`:''}`;
+  $('.pick',out).addEventListener('click',()=>openSheet(best));
+  $$('.row',out).forEach(r=>r.addEventListener('click',()=>openSheet(shown[+r.dataset.i])));
+  const mb=$('#more');if(mb)mb.addEventListener('click',()=>{showAll=true;paint(cards,note);});
+}
+function renderFilters(all){
+  const types=[...new Set(all.map(c=>c.vehicle_type||'Other'))];
+  const sups=[...new Set(all.map(c=>c.supplier).filter(Boolean))];
+  const prices=all.map(c=>c.price).filter(v=>v!=null);
+  const chip=(k,v,l,on)=>`<button class="fchip${on?' on':''}" data-k="${esc(k)}" data-v="${esc(v)}">${esc(l)}</button>`;
+  const typeC=types.map(t=>chip('type',t,t,F.types.has(t))).join('');
+  const seatC=[['0','Any'],['4','4+'],['5','5+'],['7','7+']].map(([v,l])=>chip('seats',v,l,String(F.seats||0)===v)).join('');
+  const budC=[['Infinity','Any']].concat(budgetBuckets(prices).map(x=>[String(x),'≤ '+money(x)])).map(([v,l])=>chip('budget',v,l,String(F.budget)===v)).join('');
+  const distC=[['Infinity','Any'],['8.05','≤5 mi'],['16.09','≤10 mi'],['40.23','≤25 mi']].map(([v,l])=>chip('dist',v,l,String(F.distKm)===v)).join('');
+  const supC=sups.map(s=>chip('supplier',s,s,F.suppliers.has(s))).join('');
+  const n=activeCount();
+  $('#filters').innerHTML=`
+    <button class="ftoggle" id="ftoggle">🎚 Refine your match${n?` · <b>${n}</b>`:''} <span class="fchev">${fOpen?'▲':'▼'}</span></button>
+    <div class="fbody" id="fbody" style="display:${fOpen?'block':'none'}">
+      <div class="fintro">AI found your options — refine to your <b>perfect match</b>.</div>
+      <div class="fgrp"><div class="fh">Vehicle type</div><div class="fchips">${typeC}</div></div>
+      <div class="fgrp"><div class="fh">Passengers</div><div class="fchips">${seatC}</div></div>
+      <div class="fgrp"><div class="fh">Max budget (total)</div><div class="fchips">${budC}</div></div>
+      <div class="fgrp"><div class="fh">Distance from centre</div><div class="fchips">${distC}</div></div>
+      <div class="fgrp"><div class="fh">Supplier</div><div class="fchips">${supC}</div></div>
+      ${n?'<button class="fclear" id="fclear">Clear all filters</button>':''}</div>`;
+  $('#ftoggle').onclick=()=>{fOpen=!fOpen;$('#fbody').style.display=fOpen?'block':'none';const cv=$('.fchev');if(cv)cv.textContent=fOpen?'▲':'▼';};
+  const fc=$('#fclear');if(fc)fc.onclick=()=>{F.types.clear();F.suppliers.clear();F.seats=0;F.budget=Infinity;F.distKm=Infinity;F.area=null;render();};
+  $$('#fbody .fchip').forEach(b=>b.onclick=()=>toggleFilter(b.dataset.k,b.dataset.v));
+}
+function toggleFilter(k,v){
+  if(k==='type')F.types.has(v)?F.types.delete(v):F.types.add(v);
+  else if(k==='supplier')F.suppliers.has(v)?F.suppliers.delete(v):F.suppliers.add(v);
+  else if(k==='seats')F.seats=v==='0'?0:parseInt(v);
+  else if(k==='budget')F.budget=v==='Infinity'?Infinity:parseFloat(v);
+  else if(k==='dist')F.distKm=v==='Infinity'?Infinity:parseFloat(v);
+  track('filter',{k,v});render();
+}
+function budgetBuckets(prices){if(prices.length<2)return[];const mx=Math.max(...prices),mn=Math.min(...prices);if(mx<=mn)return[];const out=[];for(let i=1;i<=3;i++)out.push(Math.round((mn+(mx-mn)*i/4)/5)*5);return[...new Set(out)].filter(x=>x<mx);}
+let CO={car:null,ins:null};
+async function openSheet(car){
+  CO={car:car,ins:null,quote:null,pendingOrder:null};track('select',{name:car.name,price:car.price});
+  $('#sheet-in').innerHTML='<div class="empty">Checking the latest price…</div>';toggle(true);$('#sheet').scrollTop=0;
+  try{CO.quote=await fetchQuote(car);}catch(e){renderExpired(e);return;}
+  if(CO.car!==car)return; // user picked another car meanwhile
+  renderDetail();
+}
+function renderExpired(e){
+  const expired=e&&e.code==='quote_expired';
+  $('#sheet-in').innerHTML=`<div class="done"><h2>${expired?'Prices have been updated':'Couldn’t load this price'}</h2>
+    <p class="plg" style="margin-top:8px">${expired?'These results are a little old. Search again to see current prices.':'Please try again in a moment.'}</p>
+    <button class="cf" id="re-search">${expired?'Search again':'Try again'}</button></div>`;
+  $('#re-search').addEventListener('click',()=>{if(expired){toggle(false);run();}else openSheet(CO.car);});
+}
+function renderDetail(){
+  const car=CO.car, qt=CO.quote, area=car.pickup_location||q?.label||'';
+  const base=qt.base_price, fee=qt.service_fee, total=Math.round((base+fee)*100)/100;
+  $('#sheet-in').innerHTML=`
+    <h2>${esc(car.name||'Your Car Rental')}</h2>
+    <div class="plg">${esc(car.vehicle_type)} · ${esc(car.seats||5)} seats · ${esc(car.transmission||'Automatic')}</div>
+    <div class="dhero">${SVG}${safeImg(car.image)?`<img src="${safeImg(car.image)}" onerror="this.remove()" alt="">`:''}</div>
+    <div class="supbox">
+      <div class="s1">${esc(car.supplier||'Supplier')} ${car.supplier_rating?`<span class="sc">${esc(car.supplier_rating)}</span>`:''}</div>
+      <div class="ad">📍 ${esc(area)} area${car.distance_km!=null?(car.distance_km<1.5?' · near centre':` · ~${Number(car.distance_km).toFixed(0)} km from centre`):''}</div>
+      <div class="ad" style="margin-top:5px;color:var(--accent-ink);font-weight:600">🔒 Exact pickup address is sent once you reserve.</div>
+    </div>
+    <div class="sum">
+      <div class="l"><span>Rental — pay at pick-up</span><b>${money(base)}</b></div>
+      ${qt.fees_on?`<div class="l"><span>Platform fee — pay now</span><b>${money(fee)}</b></div>`:''}
+      ${car.free_cancellation?'<div class="l"><span>Cancellation</span><b style="color:var(--save)">Free</b></div>':''}
+      <div class="l tot"><span>Trip total</span><b>${money(total)}</b></div>
+    </div>
+    <button class="cf" id="next">Continue</button>
+    <div class="fine">${fee>0?`You pay the ${money(fee)} platform fee now. `:''}The ${money(base)} rental is paid to ${esc(car.supplier||'the supplier')} at the counter.</div>`;
+  $('#next').addEventListener('click',()=>{CO.quote.insurance?renderInsurance():(CO.ins=null,renderCheckout());});
+}
+function renderInsurance(){
+  const ins=CO.quote.insurance;
+  $('#sheet-in').innerHTML=`
+    <div style="text-align:center;padding-top:6px">
+      <div style="font-size:34px">🛡️</div>
+      <h2 style="margin-top:6px">Protect yourself against damage?</h2>
+      <p style="color:var(--muted);font-size:14px;margin-top:8px;line-height:1.55">Rental companies can hold you liable for damage — often <b style="color:var(--ink)">$3,000+</b>. Add full coverage now, or decline if you already have cover (for example through your own insurance or credit card).</p>
+    </div>
+    <div class="insopt" id="ins-add">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+        <div><div style="font-weight:800;font-size:15px">${esc(ins.label)}</div><div style="font-size:12.5px;color:var(--muted);margin-top:2px">Zero excess · ${ins.days} day${ins.days>1?'s':''} · certificate issued instantly</div></div>
+        <div style="font-weight:800;font-size:18px;color:var(--accent-ink);white-space:nowrap">${money(ins.price)}</div>
+      </div>
+      <div style="margin-top:7px;font-size:11.5px;color:var(--save);font-weight:700">✓ Optional — covers collision, damage &amp; theft</div>
+    </div>
+    <button class="cf" id="add">Add coverage &amp; continue</button>
+    <button class="waive" id="waive">No thanks — continue without coverage</button>
+    <div class="fine">Coverage is provided by our insurance partner; the certificate is emailed on reservation.</div>`;
+  $('#add').addEventListener('click',()=>{CO.ins={...ins};track('insurance_add',{price:ins.price});renderCheckout();});
+  $('#ins-add').addEventListener('click',()=>$('#add').click());
+  $('#waive').addEventListener('click',()=>{CO.ins=null;track('insurance_waive');renderCheckout();});
+  $('#sheet').scrollTop=0;
+}
+function _contact(){return {name:$('#n').value.trim(),email:$('#e').value.trim(),phone:$('#p').value.trim()};}
+function _validContact(){const c=_contact();
+  if(!c.name){$('#n').focus();return null;}
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(c.email)){$('#e').focus();$('#e').style.borderColor='#f43f5e';return null;}
+  if(!c.phone){$('#p').focus();$('#p').style.borderColor='#f43f5e';return null;}
+  return c;}
+function renderCheckout(){
+  const car=CO.car, qt=CO.quote;
+  const fee=qt.service_fee, base=qt.base_price, ins=CO.ins?CO.ins.price:0;
+  const payNow=payNowOf();
+  const paid=payNow>0 && !demo() && window.OC.paypal && window.OC.paypal.configured;
+  CO.pendingOrder=null;
+  const alts=(res?res.cards:[]).filter(c=>c.vehicle_id!==car.vehicle_id).slice(0,3);
+  $('#sheet-in').innerHTML=`
+    <h2>Almost done</h2>
+    <div class="plg">${esc(car.name)} · ${esc(q?.label||'')}</div>
+    <div class="sum">
+      ${qt.fees_on?`<div class="l"><span>Platform fee</span><b>${money(fee)}</b></div>`:`<div class="l"><span>Reservation</span><b style="color:var(--muted)">No fee</b></div>`}
+      ${CO.ins?`<div class="l"><span>${esc(CO.ins.label)}</span><b>${money(ins)}</b></div>`:''}
+      <div class="l tot"><span>${paid?'Pay now':'Due now'}</span><b style="color:var(--accent-ink)">${money(payNow)}</b></div>
+      <div class="l" style="border:0;padding-top:4px"><span>Rental at pick-up · to ${esc(car.supplier||'supplier')}</span><b>${money(base)}</b></div>
+    </div>
+    <div class="fld"><label>Full name</label><input id="n" placeholder="Jane Driver" autocomplete="name"></div>
+    <div class="fld"><label>Email</label><input id="e" type="email" inputmode="email" placeholder="you@email.com" autocomplete="email"></div>
+    <div class="fld"><label>Mobile</label><input id="p" type="tel" inputmode="tel" placeholder="(555) 123-4567" autocomplete="tel"></div>
+    ${paid?`<div id="pay-wrap">
+      <div class="fld"><label>Card number</label><div id="cf-number" class="ppf"></div></div>
+      <div class="cf2">
+        <div class="fld"><label>Expiry</label><div id="cf-exp" class="ppf"></div></div>
+        <div class="fld"><label>CVV</label><div id="cf-cvv" class="ppf"></div></div>
+        <div class="fld"><label>ZIP</label><input id="zip" inputmode="numeric" placeholder="33101" autocomplete="postal-code"></div>
+      </div></div>`:''}
+    <label class="chk"><input type="checkbox" id="tc"> I agree to the <a href="/terms" target="_blank">Terms &amp; Conditions</a> and <a href="/privacy" target="_blank">Privacy Policy</a>.</label>
+    <label class="chk"><input type="checkbox" id="elig"> The main driver is <b>21 or older</b>, holds a valid <b>credit card</b> and an <b>active driver’s license</b>.</label>
+    <button class="cf" id="cf" disabled>${paid?`Authorize ${money(payNow)}`:'Reserve'}</button>
+    <div id="pay-err" class="fine" style="color:#f43f5e"></div>
+    <div class="fine">${paid?`We place a hold of ${money(payNow)} now${CO.ins?' (incl. insurance certificate)':''} — captured after your free-cancellation window. The ${money(base)} rental is paid at the counter.`:`No payment now — you’re reserving ${esc(car.name)}. The ${money(base)} rental is paid at the counter; we email confirmation and the exact pickup address.`}</div>
+    ${alts.length?`<div class="alt"><h4>You might also like</h4>${alts.map((c,i)=>`<div class="row" data-a="${i}">${img(c.image)}<div class="mid"><div class="nm">${esc(c.name)}</div><div class="sub">${esc(c.vehicle_type)}${c.supplier?' · '+esc(c.supplier):''}</div></div><div><div class="pr">${money(c.price)}</div></div></div>`).join('')}</div>`:''}`;
+  const cf=$('#cf');
+  function refresh(){cf.disabled=!($('#tc').checked&&$('#elig').checked);}
+  $('#tc').addEventListener('change',refresh);$('#elig').addEventListener('change',refresh);refresh();
+  if(paid)setupCardFields();
+  cf.addEventListener('click',()=>{
+    if(CO.pendingOrder){submit(CO.pendingOrder);return;}   // retry after a failed save: same approved order
+    paid?payWithCard():submit();});
+  $$('#sheet-in .alt .row').forEach(r=>r.addEventListener('click',()=>openSheet(alts[+r.dataset.a])));
+  $('#sheet').scrollTop=0;
+}
+function setupCardFields(){
+  CO._cf=null;
+  loadPayPal().then(()=>{
+    if(!window.paypal||!paypal.CardFields)throw 0;
+    const cfStyle={
+      input:{color:'#eaf0ff','font-size':'15px','font-family':'system-ui,-apple-system,Segoe UI,sans-serif','font-weight':'500'},
+      '::placeholder':{color:'#8a93a6'},
+      ':focus':{color:'#ffffff'},
+      '.invalid':{color:'#f43f5e'}
+    };
+    const cardField=paypal.CardFields({
+      style:cfStyle,
+      // The server prices the order from the quote — we only say which car and whether insurance.
+      createOrder:()=>fetch(`${apiBase()}/paypal/create-order`,{method:'POST',headers:{'content-type':'application/json'},
+        body:JSON.stringify({job_id:CO.quote.job_id,vehicle_id:CO.car.vehicle_id,insurance:!!CO.ins,customer:_contact()})})
+        .then(r=>r.json().then(d=>{if(!r.ok||!d.order_id){CO._orderErr=d;throw new Error(d.message||'order failed');}return d.order_id;})),
+      onApprove:(data)=>submit(data.orderID),
+      onError:()=>{const d=CO._orderErr||{};CO._orderErr=null;
+        $('#pay-err').textContent=d.error==='quote_expired'?'These prices have expired — please search again.':(d.message||'Card error — please check the details and try again.');
+        $('#cf').disabled=false;}
+    });
+    if(cardField.isEligible()){
+      cardField.NumberField().render('#cf-number');
+      cardField.ExpiryField().render('#cf-exp');
+      cardField.CVVField().render('#cf-cvv');
+      CO._cf=cardField;
+    }else{
+      $('#pay-wrap').innerHTML='<div class="fine">Card payment isn’t enabled on this account yet — you can still reserve and we’ll collect payment on confirmation.</div>';
+    }
+  }).catch(()=>{const w=$('#pay-wrap');if(w)w.innerHTML='<div class="fine">Card payment is unavailable right now — reserve and we’ll follow up.</div>';});
+}
+function payWithCard(){
+  if(!_validContact())return;
+  const cf=$('#cf'); $('#pay-err').textContent='';
+  if(!CO._cf){submit();return;}
+  cf.disabled=true;
+  const zip=(($('#zip')&&$('#zip').value)||'').trim();
+  CO._cf.submit({billingAddress:{postalCode:zip,countryCode:'US'}})
+    .catch(()=>{if(!$('#pay-err').textContent)$('#pay-err').textContent='Could not authorize the card. Check the number, expiry, CVV and ZIP.';cf.disabled=false;});
+}
+function fmtDT(s){ if(!s)return '—'; try{const x=new Date(s); if(isNaN(x))return s; return x.toLocaleString([], {month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'});}catch(e){return s;} }
+function renderReservationView(d,opts){
+  opts=opts||{};
+  const ref=String(d.ref||(d.id||'').slice(0,8)||'').toUpperCase();
+  const payFailed=d.payment_status==='failed';
+  const held=d.payment_status==='authorized', charged=d.payment_status==='captured';
+  const title=opts.success?(payFailed?'Reservation saved — payment not completed':(held?'Reservation confirmed':'Reservation received')):'Your reservation';
+  const nowLabel=charged?'Paid':(held?'Held on your card':(payFailed?'Not charged':'Due online'));
+  $('#sheet-in').innerHTML=`
+    <div class="rv">
+      ${opts.success&&!payFailed?'<div class="ck">✓</div>':''}
+      <h2 style="text-align:center;margin-top:${opts.success&&!payFailed?'0':'8px'}">${title}</h2>
+      <div class="rvref">Reservation <b>#${esc(ref)}</b></div>
+      ${payFailed&&opts.success?`<div class="fine" style="color:#f59e0b;text-align:center;margin-bottom:6px">Your card hold didn’t go through, so nothing was charged. We’ve saved your reservation and will contact you to complete it — or call <a href="tel:+18885271977" style="color:inherit">+1 (888) 527-1977</a>.</div>`:''}
+      <div class="rvcard">
+        <div class="rvrow"><span>Vehicle</span><b>${esc(d.vehicle_name||'—')}${d.vehicle_type?` · ${esc(d.vehicle_type)}`:''}</b></div>
+        <div class="rvrow"><span>Supplier</span><b>${esc(d.supplier||'—')}</b></div>
+        <div class="rvrow"><span>Where</span><b>${esc(d.city||'—')}${d.pickup_area?` · ${esc(d.pickup_area)}`:''}</b></div>
+        <div class="rvrow"><span>Pick-up</span><b>${esc(fmtDT(d.pickup_datetime))}</b></div>
+        <div class="rvrow"><span>Drop-off</span><b>${esc(fmtDT(d.dropoff_datetime))}</b></div>
+        ${d.supplier_reservation_number?`<div class="rvrow"><span>Supplier ref</span><b>${esc(d.supplier_reservation_number)}</b></div>`:''}
+        ${d.policy_number?`<div class="rvrow"><span>Insurance policy</span><b>${esc(d.policy_number)}</b></div>`:''}
+      </div>
+      <div class="rvcard">
+        ${d.service_fee?`<div class="rvrow"><span>Platform fee</span><b>${money(d.service_fee)}</b></div>`:''}
+        ${d.insurance_price?`<div class="rvrow"><span>Insurance</span><b>${money(d.insurance_price)}</b></div>`:''}
+        <div class="rvrow"><span><b style="color:var(--ink)">${nowLabel}</b></span><b style="color:var(--accent-ink)">${money(d.pay_now)}</b></div>
+        <div class="rvrow"><span>Rental at counter</span><b>${money(d.base_price)}</b></div>
+        <div class="rvrow"><span>Status</span><b style="text-transform:capitalize">${esc((d.status||'—').replace(/_/g,' '))}</b></div>
+      </div>
+      <div class="fine" style="text-align:center">A confirmation${d.insurance_price?' and insurance certificate':''} — with the exact pickup address — ${opts.success?'is on its way to':'was sent to'} <b style="color:var(--ink)">${esc(d.customer_email||'')}</b>.</div>
+      <div class="rvbtns">
+        <a class="cf ghost" href="tel:+18885271977">Contact us</a>
+        <button class="cf" id="rv-done">Done</button>
+      </div>
+    </div>`;
+  const done=$('#rv-done'); if(done)done.addEventListener('click',()=>toggle(false));
+  $('#sheet').scrollTop=0;
+}
+/* Messages for the backend's checkout error codes. Nothing is charged in any of these cases. */
+const SUBMIT_ERR={
+  quote_expired:'These prices have expired. Please search again — no charge was made.',
+  payment_expired:'Your payment session expired — no charge was made. Please try again.',
+  price_changed:'The price changed while you were checking out — no charge was made. Please review the new total.',
+  rate_limited:'Too many attempts — please wait a few minutes and try again.',
+  bad_customer:'Please check your name, email and phone number.',
+};
+async function submit(orderId){
+  const c=_validContact(); if(!c)return;
+  const car=CO.car, cf=$('#cf'), err=$('#pay-err');
+  if(cf)cf.disabled=true; if(err)err.textContent='';
+
+  if(demo()){
+    // Demo only: nothing is sent or stored, so no conversions fire.
+    const qt=CO.quote, ins=CO.ins?CO.ins.price:0;
+    renderReservationView({ref:'DEMO'+Math.random().toString(36).slice(2,6).toUpperCase(),vehicle_name:car.name,supplier:car.supplier,vehicle_type:car.vehicle_type,city:q?.label||'',pickup_area:car.pickup_location||'',pickup_datetime:$('#pu').value,dropoff_datetime:$('#dt').value,base_price:qt.base_price,service_fee:qt.service_fee,insurance_price:ins,pay_now:payNowOf(),customer_email:c.email,status:'demo',payment_status:'none'},{success:true});
+    return;
+  }
+
+  // Only identifiers go to the server — it prices everything from its own quote.
+  const payload={
+    job_id:CO.quote.job_id, vehicle_id:car.vehicle_id, insurance:!!CO.ins,
+    customer:c,
+    search:{trip:tripType},
+    source:{gclid:params.get('gclid')||null,utm:params.get('utm_campaign')||null,page:location.href},
+    paypal_order_id:orderId||null, funnel:'online'};
+
+  let r=null, d=null;
+  try{r=await fetch(`${apiBase()}${CONFIG.REQUEST_ENDPOINT}`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload)});
+      d=await r.json().catch(()=>null);}catch(e){r=null;}
+
+  if(!r||!r.ok||!d||!d.id){
+    // NOT saved. Never show a made-up reservation. Keep the approved order for an idempotent retry.
+    const code=d&&d.error;
+    if(orderId&&!code)CO.pendingOrder=orderId;      // network/server error → retry the same order
+    else CO.pendingOrder=null;
+    track('reserve_error',{code:code||(r?('http_'+r.status):'network')});
+    if(code==='price_changed'){try{CO.quote=await fetchQuote(car);}catch(e){}renderCheckout();$('#pay-err').textContent=SUBMIT_ERR.price_changed;return;}
+    if(err)err.innerHTML=esc(SUBMIT_ERR[code]||'We couldn’t complete your reservation and nothing was charged. Please try again, or call ')+(SUBMIT_ERR[code]?'':'<a href="tel:+18885271977" style="color:inherit">+1 (888) 527-1977</a>.');
+    if(cf){cf.disabled=false; if(CO.pendingOrder)cf.textContent='Try again';}
+    return;
+  }
+
+  // Fire conversions ONLY for a saved reservation, and for a paid checkout only once the hold succeeded.
+  // Value = server-computed margin; transaction_id = the real reservation ref.
+  const real=!orderId || d.payment_status==='authorized';
+  if(real){
+    const cref=String(d.ref||'').toUpperCase(), margin=Number(d.conversion_value)||0;
+    if(typeof gtag==='function'){
+      if(CONFIG.ADS_CONVERSION){
+        gtag('event','conversion',{send_to:CONFIG.ADS_CONVERSION,value:margin,currency:'USD',transaction_id:cref,
+          user_data:{email:c.email,phone_number:c.phone}});
+      }
+      /* GA4 ecommerce purchase — for analytics reporting (keep this OUT of Ads import to avoid double-count). */
+      gtag('event','purchase',{transaction_id:cref,value:margin,tax:0,shipping:0,currency:'USD',
+        items:[{item_id:car.vehicle_id,item_name:car.name,item_category:car.vehicle_type||'Car Rental',price:margin,quantity:1}]});
+    }
+    track('reserve',{value:d.pay_now,margin:margin,currency:'USD',name:car.name,insurance:!!CO.ins,paid:!!orderId});
+    if(typeof clarity==='function')clarity("event","reservation_success");
+  }else{
+    track('reserve_payment_failed',{ref:d.ref});
+  }
+  renderReservationView(d,{success:true});
+}
+function openLookup(){
+  CO={};
+  $('#sheet-in').innerHTML=`
+    <h2>Find my reservation</h2>
+    <div class="plg">Enter your 8-character reservation number and the email or last name you booked with.</div>
+    <div class="fld"><label>Reservation number</label><input id="lk-ref" placeholder="e.g. 3F9A2B10" autocomplete="off" maxlength="9"></div>
+    <div class="fld"><label>Email</label><input id="lk-email" type="email" inputmode="email" placeholder="you@email.com"></div>
+    <div class="plg" style="text-align:center;margin:2px 0">— or —</div>
+    <div class="fld"><label>Last name</label><input id="lk-last" placeholder="Driver"></div>
+    <button class="cf" id="lk-go">Find reservation</button>
+    <div id="lk-err" class="fine" style="color:#f43f5e"></div>`;
+  $('#lk-go').addEventListener('click',doLookup);
+  toggle(true); $('#sheet').scrollTop=0;
+}
+async function doLookup(){
+  const ref=($('#lk-ref').value||'').trim().replace('#',''), email=($('#lk-email').value||'').trim(), last=($('#lk-last').value||'').trim();
+  if(!/^[0-9a-f]{8}$/i.test(ref)){$('#lk-ref').focus();$('#lk-err').textContent='Your reservation number is 8 letters and digits, e.g. 3F9A2B10.';return;}
+  if(!email&&!last){$('#lk-email').focus();return;}
+  $('#lk-err').textContent='';
+  if(demo()){$('#lk-err').textContent='Reservation lookup works on the live site.';return;}
+  try{
+    const r=await fetch(`${apiBase()}/lookup`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({ref,email,last_name:last})});
+    if(r.ok){renderReservationView(await r.json(),{success:false});return;}
+    const d=await r.json().catch(()=>({}));
+    $('#lk-err').textContent=(r.status===404)?'No reservation found with those details.':(d.message||'Please check the details and try again.');
+  }catch(e){$('#lk-err').textContent='Could not reach the server. Please try again.';}
+}
+function toggle(o){$('#ov').classList.toggle('open',o);$('#sheet').classList.toggle('open',o);document.body.style.overflow=o?'hidden':'';}
+$('#ov').addEventListener('click',()=>toggle(false));
+{const pLat=parseFloat(params.get('lat')),pLon=parseFloat(params.get('lon'));
+ if(!isNaN(pLat)&&!isNaN(pLon)){pickLoc={label:params.get('city')||'Your location',lat:pLat,lon:pLon,iata:null};if(params.get('city'))$('#loc').value=params.get('city');}}
+if(params.get('supplier')){F.suppliers.add(params.get('supplier'));fOpen=true;}
+if(params.get('area')){F.area=params.get('area');fOpen=true;}
+track('view',{place:params.get('city')||params.get('iata')||'home',demo:demo(),active:activeCount()});
+if(params.get('autosearch')==='1'){setTimeout(run,250);}
+else if(pickLoc){
+  setTimeout(function(){var pu=$('#pu'),dt=$('#dt');try{pu.scrollIntoView({behavior:'smooth',block:'center'});}catch(e){}
+    [pu,dt].forEach(function(el){if(el){el.classList.add('date-nudge');setTimeout(function(){el.classList.remove('date-nudge');},3200);}});
+    if(pu)pu.focus();},350);}
+const DEMO_BASE=[
+ {vehicle_id:"1",name:"Toyota Corolla",supplier:"Avis",supplier_rating:8.9,seats:5,transmission:"Automatic",vehicle_type:"Full-size",pickup_location:"Miami Intl",pickup_address:"3900 NW 25th St, Miami, FL 33142",distance_km:0.4,price:54,original_price:60,price_duration:"for 3 days",free_cancellation:true,best_in_type:true,image:"https://cdn.rcstatic.com/images/car_images/web/toyota/corolla_lrg.png"},
+ {vehicle_id:"2",name:"Kia Rio",supplier:"Budget",supplier_rating:9.8,seats:5,transmission:"Automatic",vehicle_type:"Compact",pickup_location:"Miami Intl",pickup_address:"3900 NW 25th St, Miami, FL 33142",distance_km:1.2,price:55,original_price:null,price_duration:"for 3 days",free_cancellation:true,image:"https://cdn.rcstatic.com/images/car_images/web/kia/rio_lrg.png"},
+ {vehicle_id:"3",name:"Nissan Versa",supplier:"Enterprise",supplier_rating:9.1,seats:5,transmission:"Automatic",vehicle_type:"Mid-size",pickup_location:"Miami Intl",pickup_address:"3901 NW 28th St, Miami, FL 33142",distance_km:2.0,price:59,original_price:null,price_duration:"for 3 days",free_cancellation:true,image:"https://cdn.rcstatic.com/images/car_images/web/nissan/versa_lrg.png"},
+ {vehicle_id:"4",name:"Toyota RAV4",supplier:"Avis",supplier_rating:8.9,seats:5,transmission:"Automatic",vehicle_type:"SUV",pickup_location:"Miami Intl",pickup_address:"3900 NW 25th St, Miami, FL 33142",distance_km:0.4,price:61,original_price:67,price_duration:"for 3 days",free_cancellation:true,image:"https://cdn.rcstatic.com/images/car_images/web/toyota/rav4_lrg.png"},
+ {vehicle_id:"5",name:"Chrysler Pacifica",supplier:"Enterprise",supplier_rating:9.4,seats:7,transmission:"Automatic",vehicle_type:"Minivan",pickup_location:"Miami Intl",pickup_address:"3901 NW 28th St, Miami, FL 33142",distance_km:2.1,price:80,original_price:null,price_duration:"for 3 days",free_cancellation:true,image:"https://cdn.rcstatic.com/images/car_images/new_images/chrysler/pacifica_lrg.png"},
+];
+</script>
+<div id="trc-cookie" style="position:fixed;left:12px;right:12px;bottom:12px;z-index:100000;max-width:720px;margin:0 auto;background:#0b1d3a;color:#eef2ff;border:1px solid rgba(212,175,55,.5);border-radius:14px;padding:14px 16px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;box-shadow:0 12px 40px rgba(0,0,0,.4);font-size:13px;line-height:1.5">
+  <div style="flex:1;min-width:200px">We use cookies to run the site and, with your OK, to measure traffic and ads. See our <a href="/cookies" style="color:#67e8f9">Cookie Policy</a>.</div>
+  <div style="display:flex;gap:8px">
+    <button id="trc-reject" style="background:transparent;border:1px solid rgba(255,255,255,.35);color:#eef2ff;border-radius:9px;padding:9px 14px;font-weight:700;cursor:pointer">Reject</button>
+    <button id="trc-accept" style="background:#12b886;border:0;color:#fff;border-radius:9px;padding:9px 16px;font-weight:800;cursor:pointer">Accept</button>
+  </div>
+</div>
+<script>
+  (function(){var b=document.getElementById('trc-cookie');
+   function hide(v){try{localStorage.setItem('trc_consent',v);}catch(e){} if(b)b.style.display='none';}
+   try{if(localStorage.getItem('trc_consent')){if(b)b.style.display='none';}}catch(e){}
+   var a=document.getElementById('trc-accept'),r=document.getElementById('trc-reject');
+   if(a)a.onclick=function(){if(window.gtag)gtag('consent','update',{ad_storage:'granted',ad_user_data:'granted',ad_personalization:'granted',analytics_storage:'granted'});hide('granted');};
+   if(r)r.onclick=function(){hide('denied');};
+  })();
+</script>
+
+<!-- Microsoft Clarity (Moved to last) -->
+<script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "xt2ezrz5yd");
+</script>
+</body>
+</html>

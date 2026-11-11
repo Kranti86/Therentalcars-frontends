@@ -1,0 +1,48 @@
+<!--
+  Therentalcars — Cookie Consent + Google Consent Mode v2
+  ========================================================
+  Reuse on any page that loads GTM / GA4 / Ads / Clarity (the online app AND the SEO
+  city-page template).
+
+  INSTALL (two parts):
+
+  PART A  →  paste as the FIRST thing inside <head>, BEFORE any GTM / gtag / Clarity
+             script. It sets consent to "denied" by default so tags wait for the user.
+
+  PART B  →  paste just before </body>. It shows the banner and, on Accept, flips
+             consent to "granted".
+-->
+
+<!-- ================= PART A — top of <head> ================= -->
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  // Default: everything non-essential OFF until the visitor accepts.
+  gtag('consent','default',{
+    ad_storage:'denied', ad_user_data:'denied', ad_personalization:'denied',
+    analytics_storage:'denied', wait_for_update:500
+  });
+  // Returning visitor who already accepted → grant immediately (no flash of blocked tags).
+  try{ if(localStorage.getItem('trc_consent')==='granted'){
+    gtag('consent','update',{ad_storage:'granted',ad_user_data:'granted',ad_personalization:'granted',analytics_storage:'granted'});
+  } }catch(e){}
+</script>
+
+<!-- ================= PART B — before </body> ================= -->
+<div id="trc-cookie" style="position:fixed;left:12px;right:12px;bottom:12px;z-index:100000;max-width:720px;margin:0 auto;background:#0b1d3a;color:#eef2ff;border:1px solid rgba(212,175,55,.5);border-radius:14px;padding:14px 16px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;box-shadow:0 12px 40px rgba(0,0,0,.4);font-family:system-ui,Segoe UI,Arial,sans-serif;font-size:13px;line-height:1.5">
+  <div style="flex:1;min-width:220px">We use cookies to run the site and, with your OK, to measure traffic and ads. See our <a href="/cookies" style="color:#67e8f9">Cookie Policy</a>.</div>
+  <div style="display:flex;gap:8px">
+    <button id="trc-reject" style="background:transparent;border:1px solid rgba(255,255,255,.35);color:#eef2ff;border-radius:9px;padding:9px 14px;font-weight:700;cursor:pointer">Reject</button>
+    <button id="trc-accept" style="background:#12b886;border:0;color:#fff;border-radius:9px;padding:9px 16px;font-weight:800;cursor:pointer">Accept</button>
+  </div>
+</div>
+<script>
+  (function(){
+    var b=document.getElementById('trc-cookie');
+    function hide(v){ try{localStorage.setItem('trc_consent',v);}catch(e){} if(b)b.style.display='none'; }
+    try{ if(localStorage.getItem('trc_consent')){ if(b)b.style.display='none'; } }catch(e){}
+    var a=document.getElementById('trc-accept'), r=document.getElementById('trc-reject');
+    if(a)a.onclick=function(){ if(window.gtag)gtag('consent','update',{ad_storage:'granted',ad_user_data:'granted',ad_personalization:'granted',analytics_storage:'granted'}); hide('granted'); };
+    if(r)r.onclick=function(){ hide('denied'); };
+  })();
+</script>

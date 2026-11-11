@@ -1,0 +1,5 @@
+# Allow all crawlers, search engines and AI bots
+User-agent: *
+Disallow:
+
+Sitemap: https://online.thecarrentals.globetradee.pro/sitemap.xml

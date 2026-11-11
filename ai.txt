@@ -1,0 +1,10 @@
+Brand: Therentalcars
+Service: Car Rental
+Phone: +1 (888) 527-1977
+Online booking: https://online.thecarrentals.globetradee.pro/online
+Agent manifest: https://thecarrentals.globetradee.pro/agent.json
+
+Verified city locations:
+- Aspen: https://thecarrentals.globetradee.pro/aspen-car-rental (live pricing)
+- Miami: https://thecarrentals.globetradee.pro/miami-car-rental (from $29/day)
+- Orlando: https://thecarrentals.globetradee.pro/orlando-car-rental (from $24/day)

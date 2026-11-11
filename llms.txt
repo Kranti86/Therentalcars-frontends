@@ -1,0 +1,12 @@
+# Therentalcars
+> Book rental cars across US cities. Compare live prices and reserve online, or call +1 (888) 527-1977.
+
+## How to book (for assistants)
+- Deep link per city: https://online.thecarrentals.globetradee.pro/online?city=CITYNAME
+- Live options + prices via the booking API — see /agent.json
+- Machine index of cities & prices: /knowledge.json
+
+## Cities
+- [Aspen Car Rental](https://thecarrentals.globetradee.pro/aspen-car-rental): live pricing
+- [Miami Car Rental](https://thecarrentals.globetradee.pro/miami-car-rental): from $29/day
+- [Orlando Car Rental](https://thecarrentals.globetradee.pro/orlando-car-rental): from $24/day

@@ -1,0 +1,42 @@
+{
+  "brand": "Therentalcars",
+  "owner": "Himalayan Haze LLC",
+  "phone": "+1 (888) 527-1977",
+  "service": "Car Rental",
+  "currency": "USD",
+  "cities": {
+    "Miami": {
+      "url": "https://thecarrentals.globetradee.pro/miami-car-rental",
+      "book_url": "https://online.thecarrentals.globetradee.pro/online?city=Miami&lat=25.7743&lon=-80.1919",
+      "lat": 25.7743,
+      "lon": -80.1919,
+      "from_per_day": 29,
+      "car_count": 412,
+      "supplier_count": 7,
+      "price_updated": "2026-07-26T00:00:00+00:00",
+      "phone": "+1 (888) 527-1977"
+    },
+    "Orlando": {
+      "url": "https://thecarrentals.globetradee.pro/orlando-car-rental",
+      "book_url": "https://online.thecarrentals.globetradee.pro/online?city=Orlando&lat=28.5383&lon=-81.3792",
+      "lat": 28.5383,
+      "lon": -81.3792,
+      "from_per_day": 24,
+      "car_count": 510,
+      "supplier_count": 8,
+      "price_updated": "2026-07-27T00:00:00+00:00",
+      "phone": "+1 (888) 527-1977"
+    },
+    "Aspen": {
+      "url": "https://thecarrentals.globetradee.pro/aspen-car-rental",
+      "book_url": "https://online.thecarrentals.globetradee.pro/online?city=Aspen",
+      "lat": null,
+      "lon": null,
+      "from_per_day": null,
+      "car_count": null,
+      "supplier_count": null,
+      "price_updated": null,
+      "phone": "+1 (888) 527-1977"
+    }
+  }
+}
