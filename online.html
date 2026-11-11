@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<!-- Cookie/consent default: non-essential tags stay OFF until the visitor accepts -->
+<!-- Consent (opt-out): analytics/ads ON by default; a visitor who clicks "Reject" on the banner is switched off (remembered). -->
 <script>
   window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
-  gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied',wait_for_update:500});
-  try{if(localStorage.getItem('trc_consent')==='granted'){gtag('consent','update',{ad_storage:'granted',ad_user_data:'granted',ad_personalization:'granted',analytics_storage:'granted'});}}catch(e){}
+  gtag('consent','default',{ad_storage:'granted',ad_user_data:'granted',ad_personalization:'granted',analytics_storage:'granted'});
+  try{if(localStorage.getItem('trc_consent')==='denied'){gtag('consent','update',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied'});}}catch(e){}
 </script>
 <title>Car Rentals — assisted by AI, reserved in seconds</title>
 <meta name="description" content="Compare live car-rental prices from rental suppliers, see your best match, and reserve online — no calls." />
@@ -269,6 +269,17 @@ const CONFIG = {
 const $=(s,e=document)=>e.querySelector(s), $$=(s,e=document)=>Array.from(e.querySelectorAll(s));
 const params=new URLSearchParams(location.search);
 const apiBase=()=>CONFIG.API_BASE.replace(/\/$/,'');
+/* Google Ads click id: from the URL, else from Google's own _gcl_aw cookie (set on the
+   root domain, so it survives a hop from a city page), remembered for 90 days. */
+const adClickId=(function(){
+  const fromUrl=params.get('gclid'); const KEY='trc_gclid', TTL=90*864e5;
+  try{ if(fromUrl){localStorage.setItem(KEY,JSON.stringify({v:fromUrl,t:Date.now()}));return fromUrl;} }catch(e){ if(fromUrl)return fromUrl; }
+  try{ const m=document.cookie.match(/(?:^|;\s*)_gcl_aw=([^;]+)/); if(m){const parts=decodeURIComponent(m[1]).split('.'); if(parts.length>=3)return parts.slice(2).join('.');} }catch(e){}
+  try{ const o=JSON.parse(localStorage.getItem(KEY)||'null'); if(o&&Date.now()-o.t<TTL)return o.v; }catch(e){}
+  return null;
+})();
+/* Enhanced Conversions match far better on +E.164 phones and lower-case emails. */
+function e164(p){const d=String(p||'').replace(/\D/g,''); if(d.length===10)return '+1'+d; if(d.length===11&&d[0]==='1')return '+'+d; if(String(p||'').trim().startsWith('+')&&d.length>=8)return '+'+d; return undefined;}
 const demo=()=>(!CONFIG.API_BASE)||params.get('demo')==='1';
 window.trcOnline=window.trcOnline||[];
 function track(ev,d={}){window.trcOnline.push(Object.assign({ev,t:Date.now()},d));if(CONFIG.GA4_ID&&typeof gtag==='function')gtag('event',ev,d);}
@@ -661,7 +672,7 @@ async function submit(orderId){
     job_id:CO.quote.job_id, vehicle_id:car.vehicle_id, insurance:!!CO.ins,
     customer:c,
     search:{trip:tripType},
-    source:{gclid:params.get('gclid')||null,utm:params.get('utm_campaign')||null,page:location.href},
+    source:{gclid:adClickId||null,utm:params.get('utm_campaign')||null,page:location.href},
     paypal_order_id:orderId||null, funnel:'online'};
 
   let r=null, d=null;
@@ -688,7 +699,7 @@ async function submit(orderId){
     if(typeof gtag==='function'){
       if(CONFIG.ADS_CONVERSION){
         gtag('event','conversion',{send_to:CONFIG.ADS_CONVERSION,value:margin,currency:'USD',transaction_id:cref,
-          user_data:{email:c.email,phone_number:c.phone}});
+          user_data:Object.assign({email:c.email.trim().toLowerCase()},e164(c.phone)?{phone_number:e164(c.phone)}:{})});
       }
       /* GA4 ecommerce purchase — for analytics reporting (keep this OUT of Ads import to avoid double-count). */
       gtag('event','purchase',{transaction_id:cref,value:margin,tax:0,shipping:0,currency:'USD',
@@ -734,6 +745,7 @@ $('#ov').addEventListener('click',()=>toggle(false));
  if(!isNaN(pLat)&&!isNaN(pLon)){pickLoc={label:params.get('city')||'Your location',lat:pLat,lon:pLon,iata:null};if(params.get('city'))$('#loc').value=params.get('city');}}
 if(params.get('supplier')){F.suppliers.add(params.get('supplier'));fOpen=true;}
 if(params.get('area')){F.area=params.get('area');fOpen=true;}
+document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('a[href^="tel:"]');if(a)track('call_click',{number:a.getAttribute('href').slice(4)});});
 track('view',{place:params.get('city')||params.get('iata')||'home',demo:demo(),active:activeCount()});
 if(params.get('autosearch')==='1'){setTimeout(run,250);}
 else if(pickLoc){
@@ -749,10 +761,10 @@ const DEMO_BASE=[
 ];
 </script>
 <div id="trc-cookie" style="position:fixed;left:12px;right:12px;bottom:12px;z-index:100000;max-width:720px;margin:0 auto;background:#0b1d3a;color:#eef2ff;border:1px solid rgba(212,175,55,.5);border-radius:14px;padding:14px 16px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;box-shadow:0 12px 40px rgba(0,0,0,.4);font-size:13px;line-height:1.5">
-  <div style="flex:1;min-width:200px">We use cookies to run the site and, with your OK, to measure traffic and ads. See our <a href="/cookies" style="color:#67e8f9">Cookie Policy</a>.</div>
+  <div style="flex:1;min-width:200px">We use cookies to run the site, measure traffic and improve our ads. You can reject analytics and ad cookies — see our <a href="/cookies" style="color:#67e8f9">Cookie Policy</a>.</div>
   <div style="display:flex;gap:8px">
     <button id="trc-reject" style="background:transparent;border:1px solid rgba(255,255,255,.35);color:#eef2ff;border-radius:9px;padding:9px 14px;font-weight:700;cursor:pointer">Reject</button>
-    <button id="trc-accept" style="background:#12b886;border:0;color:#fff;border-radius:9px;padding:9px 16px;font-weight:800;cursor:pointer">Accept</button>
+    <button id="trc-accept" style="background:#12b886;border:0;color:#fff;border-radius:9px;padding:9px 16px;font-weight:800;cursor:pointer">OK</button>
   </div>
 </div>
 <script>
@@ -761,13 +773,13 @@ const DEMO_BASE=[
    try{if(localStorage.getItem('trc_consent')){if(b)b.style.display='none';}}catch(e){}
    var a=document.getElementById('trc-accept'),r=document.getElementById('trc-reject');
    if(a)a.onclick=function(){if(window.gtag)gtag('consent','update',{ad_storage:'granted',ad_user_data:'granted',ad_personalization:'granted',analytics_storage:'granted'});hide('granted');};
-   if(r)r.onclick=function(){hide('denied');};
+   if(r)r.onclick=function(){if(window.gtag)gtag('consent','update',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied'});try{if(window.clarity)clarity('stop');}catch(e){}['_clck','_clsk'].forEach(function(n){document.cookie=n+'=; Max-Age=0; path=/';document.cookie=n+'=; Max-Age=0; path=/; domain=.'+location.hostname.split('.').slice(-2).join('.');});hide('denied');};
   })();
 </script>
 
 <!-- Microsoft Clarity (Moved to last) -->
 <script type="text/javascript">
-    (function(c,l,a,r,i,t,y){
+    if((function(){try{return localStorage.getItem('trc_consent')!=='denied'}catch(e){return true}})())(function(c,l,a,r,i,t,y){
         c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
         t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
         y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);

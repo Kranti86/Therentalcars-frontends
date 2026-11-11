@@ -19,18 +19,18 @@
     <meta name="twitter:title" content="Car Rental Miami | Therentalcars" />
     <meta name="twitter:description" content="Book a car in Miami from $29/day. Compare live prices or call." />
 
-    <!-- ============ Consent Mode v2 default (must run before any tag) ============ -->
+    <!-- ============ Consent (opt-out): ON by default; "Reject" on the banner switches it off ============ -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
-      gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied',wait_for_update:500});
-      try{if(localStorage.getItem('trc_consent')==='granted'){gtag('consent','update',{ad_storage:'granted',ad_user_data:'granted',ad_personalization:'granted',analytics_storage:'granted'});}}catch(e){}
+      gtag('consent','default',{ad_storage:'granted',ad_user_data:'granted',ad_personalization:'granted',analytics_storage:'granted'});
+      try{if(localStorage.getItem('trc_consent')==='denied'){gtag('consent','update',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied'});}}catch(e){}
     </script>
 
     <!-- ============ Microsoft Clarity (online funnel project) ============ -->
     
     <script type="text/javascript">
-        (function(c,l,a,r,i,t,y){
+        if((function(){try{return localStorage.getItem('trc_consent')!=='denied'}catch(e){return true}})())(function(c,l,a,r,i,t,y){
             c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
             t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
             y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
@@ -370,10 +370,10 @@
     </script>
 <!-- ================= PART B — before </body> ================= -->
 <div id="trc-cookie" style="position:fixed;left:12px;right:12px;bottom:12px;z-index:100000;max-width:720px;margin:0 auto;background:#0b1d3a;color:#eef2ff;border:1px solid rgba(212,175,55,.5);border-radius:14px;padding:14px 16px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;box-shadow:0 12px 40px rgba(0,0,0,.4);font-family:system-ui,Segoe UI,Arial,sans-serif;font-size:13px;line-height:1.5">
-  <div style="flex:1;min-width:220px">We use cookies to run the site and, with your OK, to measure traffic and ads. See our <a href="/cookies" style="color:#67e8f9">Cookie Policy</a>.</div>
+  <div style="flex:1;min-width:220px">We use cookies to run the site, measure traffic and improve our ads. You can reject analytics and ad cookies — see our <a href="/cookies" style="color:#67e8f9">Cookie Policy</a>.</div>
   <div style="display:flex;gap:8px">
     <button id="trc-reject" style="background:transparent;border:1px solid rgba(255,255,255,.35);color:#eef2ff;border-radius:9px;padding:9px 14px;font-weight:700;cursor:pointer">Reject</button>
-    <button id="trc-accept" style="background:#12b886;border:0;color:#fff;border-radius:9px;padding:9px 16px;font-weight:800;cursor:pointer">Accept</button>
+    <button id="trc-accept" style="background:#12b886;border:0;color:#fff;border-radius:9px;padding:9px 16px;font-weight:800;cursor:pointer">OK</button>
   </div>
 </div>
 <script>
@@ -383,8 +383,16 @@
     try{ if(localStorage.getItem('trc_consent')){ if(b)b.style.display='none'; } }catch(e){}
     var a=document.getElementById('trc-accept'), r=document.getElementById('trc-reject');
     if(a)a.onclick=function(){ if(window.gtag)gtag('consent','update',{ad_storage:'granted',ad_user_data:'granted',ad_personalization:'granted',analytics_storage:'granted'}); hide('granted'); };
-    if(r)r.onclick=function(){ hide('denied'); };
+    if(r)r.onclick=function(){if(window.gtag)gtag('consent','update',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied'});try{if(window.clarity)clarity('stop');}catch(e){}['_clck','_clsk'].forEach(function(n){document.cookie=n+'=; Max-Age=0; path=/';document.cookie=n+'=; Max-Age=0; path=/; domain=.'+location.hostname.split('.').slice(-2).join('.');});hide('denied');};
   })();
+</script>
+<script>
+  /* Carry Google Ads / UTM params from this page into the booking app links, so the
+     booking can still be matched to the ad click. */
+  (function(){var q=new URLSearchParams(location.search),keep=['gclid','gbraid','wbraid','utm_source','utm_medium','utm_campaign','utm_term','utm_content'],extra=[];
+    keep.forEach(function(k){var v=q.get(k);if(v)extra.push(k+'='+encodeURIComponent(v));});
+    if(!extra.length)return;
+    document.querySelectorAll('a[href*="online.thecarrentals.globetradee.pro"]').forEach(function(a){a.href+=(a.href.indexOf('?')<0?'?':'&')+extra.join('&');});})();
 </script>
 </body>
 </html>
