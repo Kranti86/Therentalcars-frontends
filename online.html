@@ -178,6 +178,8 @@ footer a{color:var(--muted)}
 .ppf{background:var(--panel);border:1px solid var(--panel-brd);border-radius:12px;height:48px;padding:0 12px;display:flex;align-items:center}
 .cf2{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
 .cf:disabled{opacity:.5;cursor:not-allowed}
+.pphead{margin-top:18px;font-size:13px;font-weight:700;color:var(--ink);text-align:center}
+.ppbtns{margin-top:10px;background:#fff;border-radius:14px;padding:14px 14px 6px;min-height:60px}
 .rv .ck{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#07131c;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;margin:6px auto 8px}
 .rvref{text-align:center;color:var(--muted);font-size:13px;margin-bottom:8px}
 .rvref b{color:var(--ink);letter-spacing:.06em}
@@ -310,7 +312,7 @@ function loadPayPal(){
   const cid=window.OC.paypal&&window.OC.paypal.clientId;
   if(!cid){_ppLoaded=Promise.reject('no paypal client id');return _ppLoaded;}
   _ppLoaded=new Promise((res,rej)=>{const s=document.createElement('script');
-    s.src=`https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(cid)}&components=card-fields&intent=authorize&currency=USD`;
+    s.src=`https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(cid)}&components=buttons&intent=authorize&currency=USD&disable-funding=paylater`;
     s.onload=res;s.onerror=rej;document.head.appendChild(s);});
   return _ppLoaded;
 }
@@ -549,68 +551,51 @@ function renderCheckout(){
     <div class="fld"><label>Full name</label><input id="n" placeholder="Jane Driver" autocomplete="name"></div>
     <div class="fld"><label>Email</label><input id="e" type="email" inputmode="email" placeholder="you@email.com" autocomplete="email"></div>
     <div class="fld"><label>Mobile</label><input id="p" type="tel" inputmode="tel" placeholder="(555) 123-4567" autocomplete="tel"></div>
-    ${paid?`<div id="pay-wrap">
-      <div class="fld"><label>Card number</label><div id="cf-number" class="ppf"></div></div>
-      <div class="cf2">
-        <div class="fld"><label>Expiry</label><div id="cf-exp" class="ppf"></div></div>
-        <div class="fld"><label>CVV</label><div id="cf-cvv" class="ppf"></div></div>
-        <div class="fld"><label>ZIP</label><input id="zip" inputmode="numeric" placeholder="33101" autocomplete="postal-code"></div>
-      </div></div>`:''}
     <label class="chk"><input type="checkbox" id="tc"><span>I agree to the <a href="/terms" target="_blank">Terms &amp; Conditions</a> and <a href="/privacy" target="_blank">Privacy Policy</a>.</span></label>
     <label class="chk"><input type="checkbox" id="elig"><span>The main driver is <b>21 or older</b>, holds a valid <b>credit card</b> and an <b>active driver’s license</b>.</span></label>
-    <button class="cf" id="cf" disabled>${paid?`Authorize ${money(payNow)}`:'Reserve'}</button>
+    ${paid?`<div class="pphead">Pay ${money(payNow)} securely with PayPal or card</div><div id="pay-wrap" class="ppbtns"><div class="fine" style="margin:0;color:#475569">Loading secure checkout…</div></div>`:''}
+    <button class="cf" id="cf" disabled${paid?' style="display:none"':''}>${paid?'Try again':'Reserve'}</button>
     <div id="pay-err" class="fine" style="color:#f43f5e"></div>
     <div class="fine">${paid?`We place a hold of ${money(payNow)} now${CO.ins?' (incl. insurance certificate)':''} — captured after your free-cancellation window. The ${money(base)} rental is paid at the counter.`:`No payment now — you’re reserving ${esc(car.name)}. The ${money(base)} rental is paid at the counter; we email confirmation and the exact pickup address.`}</div>
     ${alts.length?`<div class="alt"><h4>You might also like</h4>${alts.map((c,i)=>`<div class="row" data-a="${i}">${img(c.image)}<div class="mid"><div class="nm">${esc(c.name)}</div><div class="sub">${esc(c.vehicle_type)}${c.supplier?' · '+esc(c.supplier):''}</div></div><div><div class="pr">${money(c.price)}</div></div></div>`).join('')}</div>`:''}`;
   const cf=$('#cf');
   function refresh(){cf.disabled=!($('#tc').checked&&$('#elig').checked);}
   $('#tc').addEventListener('change',refresh);$('#elig').addEventListener('change',refresh);refresh();
-  if(paid)setupCardFields();
+  if(paid)setupPayPalButtons();
   cf.addEventListener('click',()=>{
     if(CO.pendingOrder){submit(CO.pendingOrder);return;}   // retry after a failed save: same approved order
-    paid?payWithCard():submit();});
+    submit();});
   $$('#sheet-in .alt .row').forEach(r=>r.addEventListener('click',()=>openSheet(alts[+r.dataset.a])));
   $('#sheet').scrollTop=0;
 }
-function setupCardFields(){
-  CO._cf=null;
+/* PayPal's own buttons: "PayPal" and "Debit or Credit Card". PayPal draws and runs the
+   whole payment form (incl. billing address, so the bank's address check works). The
+   server still decides the amount: we only send which car and whether insurance. */
+function _checkoutReady(){
+  if(!$('#tc').checked||!$('#elig').checked){$('#pay-err').textContent='Please tick both boxes above to continue.';return false;}
+  if(!_validContact()){$('#pay-err').textContent='Please enter your name, email and mobile first.';return false;}
+  $('#pay-err').textContent='';return true;
+}
+function _paymentFallback(msg){
+  const w=$('#pay-wrap'); if(w)w.innerHTML=`<div class="fine" style="margin:0;color:#475569">${msg}</div>`;
+  const cf=$('#cf'); if(cf){cf.textContent='Reserve without paying now';cf.style.display='';}
+}
+function setupPayPalButtons(){
   loadPayPal().then(()=>{
-    if(!window.paypal||!paypal.CardFields)throw 0;
-    const cfStyle={
-      input:{color:'#eaf0ff','font-size':'15px','font-family':'system-ui,-apple-system,Segoe UI,sans-serif','font-weight':'500'},
-      '::placeholder':{color:'#8a93a6'},
-      ':focus':{color:'#ffffff'},
-      '.invalid':{color:'#f43f5e'}
-    };
-    const cardField=paypal.CardFields({
-      style:cfStyle,
-      // The server prices the order from the quote — we only say which car and whether insurance.
+    if(!window.paypal||!paypal.Buttons)throw 0;
+    const wrap=$('#pay-wrap'); if(!wrap)return; wrap.innerHTML='';
+    paypal.Buttons({
+      style:{layout:'vertical',color:'gold',shape:'rect',label:'pay',height:45},
+      onClick:(data,actions)=>_checkoutReady()?actions.resolve():actions.reject(),
       createOrder:()=>fetch(`${apiBase()}/paypal/create-order`,{method:'POST',headers:{'content-type':'application/json'},
         body:JSON.stringify({job_id:CO.quote.job_id,vehicle_id:CO.car.vehicle_id,insurance:!!CO.ins,customer:_contact()})})
         .then(r=>r.json().then(d=>{if(!r.ok||!d.order_id){CO._orderErr=d;throw new Error(d.message||'order failed');}return d.order_id;})),
       onApprove:(data)=>submit(data.orderID),
+      onCancel:()=>{$('#pay-err').textContent='Payment cancelled — nothing was charged. You can try again.';},
       onError:()=>{const d=CO._orderErr||{};CO._orderErr=null;
-        $('#pay-err').textContent=d.error==='quote_expired'?'These prices have expired — please search again.':(d.message||'Card error — please check the details and try again.');
-        $('#cf').disabled=false;}
-    });
-    if(cardField.isEligible()){
-      cardField.NumberField().render('#cf-number');
-      cardField.ExpiryField().render('#cf-exp');
-      cardField.CVVField().render('#cf-cvv');
-      CO._cf=cardField;
-    }else{
-      $('#pay-wrap').innerHTML='<div class="fine">Card payment isn’t enabled on this account yet — you can still reserve and we’ll collect payment on confirmation.</div>';
-    }
-  }).catch(()=>{const w=$('#pay-wrap');if(w)w.innerHTML='<div class="fine">Card payment is unavailable right now — reserve and we’ll follow up.</div>';});
-}
-function payWithCard(){
-  if(!_validContact())return;
-  const cf=$('#cf'); $('#pay-err').textContent='';
-  if(!CO._cf){submit();return;}
-  cf.disabled=true;
-  const zip=(($('#zip')&&$('#zip').value)||'').trim();
-  CO._cf.submit({billingAddress:{postalCode:zip,countryCode:'US'}})
-    .catch(()=>{if(!$('#pay-err').textContent)$('#pay-err').textContent='Could not authorize the card. Check the number, expiry, CVV and ZIP.';cf.disabled=false;});
+        $('#pay-err').textContent=d.error==='quote_expired'?'These prices have expired — please search again.':(d.message||'Payment could not be started — please try again.');}
+    }).render('#pay-wrap').catch(()=>_paymentFallback('Card payment is unavailable right now — you can still reserve and we’ll follow up.'));
+  }).catch(()=>_paymentFallback('Card payment is unavailable right now — you can still reserve and we’ll follow up.'));
 }
 function fmtDT(s){ if(!s)return '—'; try{const x=new Date(s); if(isNaN(x))return s; return x.toLocaleString([], {month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'});}catch(e){return s;} }
 function renderReservationView(d,opts){
@@ -691,7 +676,7 @@ async function submit(orderId){
     track('reserve_error',{code:code||(r?('http_'+r.status):'network')});
     if(code==='price_changed'){try{CO.quote=await fetchQuote(car);}catch(e){}renderCheckout();$('#pay-err').textContent=SUBMIT_ERR.price_changed;return;}
     if(err)err.innerHTML=esc(SUBMIT_ERR[code]||'We couldn’t complete your reservation and nothing was charged. Please try again, or call ')+(SUBMIT_ERR[code]?'':'<a href="tel:+18885271977" style="color:inherit">+1 (888) 527-1977</a>.');
-    if(cf){cf.disabled=false; if(CO.pendingOrder)cf.textContent='Try again';}
+    if(cf){cf.disabled=false; if(CO.pendingOrder){cf.textContent='Try again';cf.style.display='';}}
     return;
   }
 
