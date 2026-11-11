@@ -254,7 +254,7 @@ footer a{color:var(--muted)}
 <script>
 /* ===================== CONFIG — separate online funnel ===================== */
 const CONFIG = {
-  API_BASE: "https://carfinder1-d20ebee21d98.herokuapp.com",   // your backend
+  API_BASE: "https://carfinder-backend-production-89e82f29.up.railway.app",   // your backend
   DEMO: false,
   CUR: "$",
   REQUEST_ENDPOINT: "/requests",
@@ -556,8 +556,8 @@ function renderCheckout(){
         <div class="fld"><label>CVV</label><div id="cf-cvv" class="ppf"></div></div>
         <div class="fld"><label>ZIP</label><input id="zip" inputmode="numeric" placeholder="33101" autocomplete="postal-code"></div>
       </div></div>`:''}
-    <label class="chk"><input type="checkbox" id="tc"> I agree to the <a href="/terms" target="_blank">Terms &amp; Conditions</a> and <a href="/privacy" target="_blank">Privacy Policy</a>.</label>
-    <label class="chk"><input type="checkbox" id="elig"> The main driver is <b>21 or older</b>, holds a valid <b>credit card</b> and an <b>active driver’s license</b>.</label>
+    <label class="chk"><input type="checkbox" id="tc"><span>I agree to the <a href="/terms" target="_blank">Terms &amp; Conditions</a> and <a href="/privacy" target="_blank">Privacy Policy</a>.</span></label>
+    <label class="chk"><input type="checkbox" id="elig"><span>The main driver is <b>21 or older</b>, holds a valid <b>credit card</b> and an <b>active driver’s license</b>.</span></label>
     <button class="cf" id="cf" disabled>${paid?`Authorize ${money(payNow)}`:'Reserve'}</button>
     <div id="pay-err" class="fine" style="color:#f43f5e"></div>
     <div class="fine">${paid?`We place a hold of ${money(payNow)} now${CO.ins?' (incl. insurance certificate)':''} — captured after your free-cancellation window. The ${money(base)} rental is paid at the counter.`:`No payment now — you’re reserving ${esc(car.name)}. The ${money(base)} rental is paid at the counter; we email confirmation and the exact pickup address.`}</div>

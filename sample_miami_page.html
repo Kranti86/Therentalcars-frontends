@@ -354,7 +354,7 @@
         // Live price refresh (credit-safe: backend serves /stats from Redis cache).
         // Every visit warms the backend cache -> popular cities stay fresh for free.
         (function(){
-            var BACKEND = "https://carfinder1-d20ebee21d98.herokuapp.com";
+            var BACKEND = "https://carfinder-backend-production-89e82f29.up.railway.app";
             var LAT = "25.7743", LON = "-80.1919", CITY = "Miami";
             if(!BACKEND || !LAT || !LON) return;
             var url = BACKEND.replace(/\/$/,'') + "/stats?lat=" + encodeURIComponent(LAT) +
