@@ -24,3 +24,8 @@
 - Home page: "Popular car rental locations" block (from `/car-rental/popular.json`); hidden
   when empty and once a search runs. Footer link "Car rental locations" on every page.
 - robots.txt lists `/car-rental/sitemap.xml`; sitemap.xml includes `/car-rental`.
+
+## Security hardening
+- Bot check support (Cloudflare Turnstile) for search, checkout and unpaid bookings; only
+  active when the backend publishes a site key. One check gives a 30-minute pass.
+- Caddy: HSTS header; CSP `frame-ancestors 'self'` and `base-uri 'self'` (no clickjacking).
