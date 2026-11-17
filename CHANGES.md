@@ -17,3 +17,10 @@
 - Sample city page: placeholder GTM/Clarity IDs replaced (GA4 `G-HJ6XYK06QT`, Clarity
   `xt2ezrz5yd`), consent-mode default + cookie banner added.
 - Removed the stray macOS `download` file; SETUP.md file names fixed.
+
+## SEO location pages on the main domain
+- Caddy proxies `/car-rental*` to the backend (adds `X-TRC-Site: main` so pages are indexable
+  here, and noindex on the Railway backend domain).
+- Home page: "Popular car rental locations" block (from `/car-rental/popular.json`); hidden
+  when empty and once a search runs. Footer link "Car rental locations" on every page.
+- robots.txt lists `/car-rental/sitemap.xml`; sitemap.xml includes `/car-rental`.
