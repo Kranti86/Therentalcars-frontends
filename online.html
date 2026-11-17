@@ -337,6 +337,21 @@ const pad=n=>String(n).padStart(2,'0'),iso=d=>`${d.getFullYear()}-${pad(d.getMon
 window.OC={service_fee_enabled:true,paypal:{clientId:'',env:'sandbox',configured:false}};
 function feesOn(){return window.OC.service_fee_enabled!==false;}
 (async function(){ if(demo())return; try{const r=await fetch(`${apiBase()}/online-config`); if(r.ok){window.OC=await r.json(); if(window.OC.insurance)Object.assign(CONFIG.INSURANCE,window.OC.insurance);}}catch(e){} })();
+/* Bot check (Cloudflare Turnstile). Only active when the backend publishes a site key.
+   One passed check gives a 30-minute pass, so customers see at most one challenge. */
+const HUMAN={pass:''};
+function tsKey(){return (window.OC&&window.OC.turnstile_site_key)||'';}
+function loadTS(){if(window.turnstile)return Promise.resolve();if(window.__tsP)return window.__tsP;
+  window.__tsP=new Promise((res,rej)=>{const sc=document.createElement('script');sc.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';sc.async=true;sc.onload=()=>res();sc.onerror=()=>{window.__tsP=null;rej();};document.head.appendChild(sc);});return window.__tsP;}
+async function tsToken(){try{await loadTS();}catch(e){return '';}
+  return new Promise(res=>{let box=document.getElementById('ts-box');if(!box){box=document.createElement('div');box.id='ts-box';box.style.cssText='position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:9999';document.body.appendChild(box);}
+    let id=null;const done=t=>{res(t||'');setTimeout(()=>{try{if(id!==null)turnstile.remove(id);}catch(e){}},0);};
+    try{id=turnstile.render(box,{sitekey:tsKey(),appearance:'interaction-only',callback:done,'error-callback':()=>done(''),'timeout-callback':()=>done('')});}catch(e){done('');}});}
+async function humanHeaders(){if(!tsKey())return {};if(HUMAN.pass)return {'X-Human-Pass':HUMAN.pass};const t=await tsToken();return t?{'X-Turnstile-Token':t}:{};}
+function keepPass(r){try{const p=r&&r.headers&&r.headers.get('X-Human-Pass');if(p)HUMAN.pass=p;}catch(e){}}
+async function humanFetch(url,opts){opts=opts||{};let r=await fetch(url,{...opts,headers:{...(opts.headers||{}),...(await humanHeaders())}});keepPass(r);
+  if(r.status===403&&tsKey()&&HUMAN.pass){HUMAN.pass='';r=await fetch(url,{...opts,headers:{...(opts.headers||{}),...(await humanHeaders())}});keepPass(r);}
+  return r;}
 let _ppLoaded=null;
 function loadPayPal(){
   if(_ppLoaded)return _ppLoaded;
@@ -425,7 +440,7 @@ async function run(){
    track('view_item_list',Object.assign({item_list_name:q.label,city:q.label,results:r.cards.length,cheapest:pr.length?Math.min(...pr):undefined,
      items:r.cards.slice(0,10).map(itemOf)},tripInfo()));}
 }
-async function live(qq){const sr=await fetch(`${apiBase()}/search`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(qq)});if(!sr.ok)throw 0;const j=await sr.json();
+async function live(qq){const sr=await humanFetch(`${apiBase()}/search`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(qq)});if(!sr.ok)throw 0;const j=await sr.json();
   for(let i=0;i<40;i++){await new Promise(r=>setTimeout(r,i<3?900:1400));const s=await(await fetch(`${apiBase()}/search/${j.job_id}`)).json();if(s.status==='done')return{cards:s.cards||[],job_id:j.job_id};if(s.status==='error')throw 0;}throw 0;}
 async function demoSearch(){await new Promise(r=>setTimeout(r,4500));
   return{cards:DEMO_BASE.map(c=>{const b=c.price;return Object.assign({},c,{base_price:b,service_fee:feeOf(b),price:totalOf(b),original_price:c.original_price?totalOf(c.original_price):null});})};}
@@ -627,9 +642,9 @@ function setupPayPalButtons(){
       style:{layout:'vertical',color:'gold',shape:'rect',label:'pay',height:45},
       onClick:(data,actions)=>{if(!_checkoutReady())return actions.reject();
         track('add_payment_info',{currency:'USD',value:payNowOf(),payment_type:'paypal',city:(q&&q.label)||''});return actions.resolve();},
-      createOrder:()=>fetch(`${apiBase()}/paypal/create-order`,{method:'POST',headers:{'content-type':'application/json'},
+      createOrder:()=>humanFetch(`${apiBase()}/paypal/create-order`,{method:'POST',headers:{'content-type':'application/json'},
         body:JSON.stringify({job_id:CO.quote.job_id,vehicle_id:CO.car.vehicle_id,insurance:!!CO.ins,customer:_contact()})})
-        .then(r=>r.json().then(d=>{if(!r.ok||!d.order_id){CO._orderErr=d;throw new Error(d.message||'order failed');}return d.order_id;})),
+        .then(r=>r.json().then(d=>{if(d&&d.human_pass)HUMAN.pass=d.human_pass;if(!r.ok||!d.order_id){CO._orderErr=d;throw new Error(d.message||'order failed');}return d.order_id;})),
       onApprove:(data)=>submit(data.orderID),
       onCancel:()=>{$('#pay-err').textContent='Payment cancelled — nothing was charged. You can try again.';},
       onError:()=>{const d=CO._orderErr||{};CO._orderErr=null;
@@ -705,7 +720,7 @@ async function submit(orderId){
     paypal_order_id:orderId||null, funnel:'online'};
 
   let r=null, d=null;
-  try{r=await fetch(`${apiBase()}${CONFIG.REQUEST_ENDPOINT}`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload)});
+  try{r=await humanFetch(`${apiBase()}${CONFIG.REQUEST_ENDPOINT}`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload)});
       d=await r.json().catch(()=>null);}catch(e){r=null;}
 
   if(!r||!r.ok||!d||!d.id){
