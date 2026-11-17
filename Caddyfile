@@ -21,7 +21,6 @@
 		format json
 	}
 
-	respond /health 200
 
 	header {
 		Strict-Transport-Security "max-age=31536000; includeSubDomains"
@@ -35,11 +34,16 @@
 	root * .
 	encode gzip zstd
 
+	# Railway's health check. Its own handle block: inside the catch-all below it would 404,
+	# and Railway would refuse to deploy.
+	handle /health {
+		respond 200
+	}
+
 	# SEO location pages are rendered by the backend but live on this domain.
 	# X-TRC-Site tells the backend it's being served here, so the pages are indexable.
 	handle /car-rental* {
 		reverse_proxy https://carfinder-backend-production-89e82f29.up.railway.app {
-			header_up Host {upstream_hostport}
 			header_up X-TRC-Site main
 		}
 	}
