@@ -166,6 +166,11 @@ img{max-width:100%}
 .done{text-align:center;padding:30px 6px}
 .done .ck{width:58px;height:58px;border-radius:50%;background:var(--save-soft);color:var(--save);font-size:28px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;box-shadow:0 0 30px rgba(52,211,153,.35)}
 .done h2{font-size:22px}
+.pop-locs{margin:34px 0 6px}.pop-locs h2{font-size:18px;margin:0 0 12px}
+.pl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.pl-card{display:block;background:var(--panel);border:1px solid var(--panel-brd);border-radius:14px;padding:12px 14px;color:var(--ink);text-decoration:none;font-size:14px}
+.pl-card:hover{border-color:var(--accent)}.pl-card small{display:block;color:var(--muted);margin-top:3px}.pl-card b{color:var(--save);font-weight:600}
+.pl-all{display:inline-block;margin-top:12px;color:var(--accent-ink);font-size:14px}
 footer{padding:30px 0 44px;text-align:center;color:var(--muted);font-size:11.5px;line-height:1.7}
 footer a{color:var(--muted)}
 .empty{padding:44px 8px;text-align:center;color:var(--muted);font-size:14px}
@@ -246,8 +251,13 @@ footer a{color:var(--muted)}
     </div>
     <div id="out"></div>
   </section>
+  <section id="pop-locs" class="pop-locs" hidden>
+    <h2>Popular car rental locations</h2>
+    <div class="pl-grid" id="pl-grid"></div>
+    <a class="pl-all" href="/car-rental">See all locations →</a>
+  </section>
   <footer>
-    <div><a href="#" id="find-res" style="color:var(--accent-ink);text-decoration:underline">Find my reservation</a> · © Therentalcars · <a href="/terms.html">Terms</a> · <a href="/privacy.html">Privacy</a></div>
+    <div><a href="#" id="find-res" style="color:var(--accent-ink);text-decoration:underline">Find my reservation</a> · <a href="/car-rental">Car rental locations</a> · © Therentalcars · <a href="/terms.html">Terms</a> · <a href="/privacy.html">Privacy</a></div>
     <div style="margin-top:6px">Prices are live estimates from partner suppliers. The rental agreement is completed with the supplier; the driver presents their own licence and card.</div>
   </footer>
 </div>
@@ -805,6 +815,24 @@ const DEMO_BASE=[
         t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
         y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
     })(window, document, "clarity", "script", "xt2ezrz5yd");
+</script>
+<script>
+/* Popular locations (SEO pages). Hidden until there is data; hidden again once a search runs. */
+(function(){
+  var box=document.getElementById('pop-locs'),grid=document.getElementById('pl-grid'),out=document.getElementById('out');
+  if(!box||!grid)return;
+  function esc(t){return String(t).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+  fetch('/car-rental/popular.json',{cache:'no-store'}).then(function(r){return r.ok?r.json():[]}).then(function(list){
+    if(!Array.isArray(list)||!list.length)return;
+    grid.innerHTML=list.slice(0,12).map(function(p){
+      var from=p.from_per_day?'from <b>$'+Math.round(p.from_per_day)+'/day</b>':'see prices';
+      var href=String(p.url||'').indexOf('/car-rental/')===0?p.url:'/car-rental';
+      return '<a class="pl-card" href="'+esc(href)+'">'+esc(p.name)+'<small>'+from+'</small></a>';
+    }).join('');
+    if(!(out&&out.children.length))box.hidden=false;
+  }).catch(function(){});
+  if(out&&window.MutationObserver){new MutationObserver(function(){if(out.children.length)box.hidden=true}).observe(out,{childList:true});}
+})();
 </script>
 </body>
 </html>

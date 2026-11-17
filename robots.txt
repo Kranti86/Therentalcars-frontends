@@ -3,3 +3,4 @@ User-agent: *
 Disallow:
 
 Sitemap: https://online.thecarrentals.globetradee.pro/sitemap.xml
+Sitemap: https://online.thecarrentals.globetradee.pro/car-rental/sitemap.xml
